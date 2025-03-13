@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from collections import Counter
 from stopwords import STOPWORDS
 from trie import Trie
 
@@ -23,15 +24,21 @@ def main():
         return
 
     soup = BeautifulSoup(r.text, features='html.parser')
-    noise = 0
+
+    noise = Counter()
+    total = 0
 
     words = soup.get_text().split()
 
     for word in words:
-        if STOPWORDS.contains(Trie.make_safe(word)):
-            noise += 1
+        safe = Trie.make_safe(word)
+        if STOPWORDS.contains(safe):
+            noise[safe] += 1
+            total += 1
 
-    print(f'Webpage {soup.title.get_text()} ({args.url}) has {noise} instances of noise words')
+    print(f'Webpage {soup.title.get_text()} ({args.url}) has {total} instances of noise words')
+    for word, count in noise.items():
+        print(f'{word}: {count}')
 
 
 if __name__ == "__main__":

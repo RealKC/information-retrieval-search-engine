@@ -1,3 +1,6 @@
+import re
+
+
 class Trie:
     OFFSET = ord('a')
     TERMINATOR = ord('{') - OFFSET
@@ -28,6 +31,13 @@ class Trie:
             return False
 
         return True
+
+    @staticmethod
+    def make_safe(word: str) -> str:
+        regex = re.compile('[^a-z]')
+
+        return regex.sub('', word.lower())
+
 
 if __name__ == '__main__':
     trie = Trie()

@@ -2,13 +2,21 @@ from bs4 import BeautifulSoup
 from stopwords import STOPWORDS
 from trie import Trie
 
+import argparse
 import requests
 
 
 def main():
-    url = "https://en.wikipedia.org/wiki/Arch_Linux"
+    parser = argparse.ArgumentParser(
+        prog='StopwordCounter',
+        description='Counts stopwords in a webpage'
+    )
 
-    r = requests.get(url)
+    parser.add_argument('url')
+
+    args = parser.parse_args()
+
+    r = requests.get(args.url)
 
     if r.status_code != 200:
         print(f'failed with status code {r.status_code}')
@@ -23,7 +31,7 @@ def main():
         if STOPWORDS.contains(Trie.make_safe(word)):
             noise += 1
 
-    print(f'Webpage {soup.title.get_text()} ({url}) has {noise} instances of noise words')
+    print(f'Webpage {soup.title.get_text()} ({args.url}) has {noise} instances of noise words')
 
 
 if __name__ == "__main__":

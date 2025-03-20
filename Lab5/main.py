@@ -38,7 +38,7 @@ def main():
                         continue
                     else:
                         stem = stemmer.stem(word)
-                        print(f'stem = {stem}')
+                        words[stem] += 1
 
 
 if __name__ == "__main__":

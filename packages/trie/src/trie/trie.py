@@ -1,7 +1,7 @@
 from typing import Self
 
 class Trie:
-    TERMINATOR = '\0'
+    TERMINATOR = ord('\0')
 
     def __init__(self):
         self.children = [None] * 255

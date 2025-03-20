@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from collections import Counter
 from trie import Trie
+import stemmer
 import os
 
 def parse_word_file(path: str) -> Trie:
@@ -22,21 +23,22 @@ def main():
 
     args = parser.parse_args()
 
-    exceptions = parse_word_file(args.exeptions)
+    exceptions = parse_word_file(args.exceptions)
     stopwords = parse_word_file(args.stopwords)
 
-    for file in os.listdir(os.fsencode(args.directory_to_index)):
+    directory = os.fsencode(args.directory_to_index)
+    for file in os.listdir(directory):
         words = Counter()
-        with open(file, 'r') as f:
-            for line in file:
+        with open(os.path.join(directory, file), 'r') as f:
+            for line in f:
                 for word in line.split():
                     if exceptions.contains(word):
                         words[word] += 1
                     elif stopwords.contains(word):
                         continue
                     else:
-                        # TODO: Stem the word
-                        pass
+                        stem = stemmer.stem(word)
+                        print(f'stem = {stem}')
 
 
 if __name__ == "__main__":

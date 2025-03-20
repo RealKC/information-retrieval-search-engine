@@ -1,3 +1,5 @@
+from typing import Self
+
 class Trie:
     TERMINATOR = '\0'
 
@@ -27,6 +29,13 @@ class Trie:
             return False
 
         return True
+
+    @staticmethod
+    def partial_search(ch: str, node: Self | None):
+        if node is None:
+            return None
+
+        return node.children[ord(ch)]
 
     @staticmethod
     def make_safe(word: str) -> str:

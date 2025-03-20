@@ -1,18 +1,14 @@
-import re
-
-
 class Trie:
-    OFFSET = ord('a')
-    TERMINATOR = ord('{') - OFFSET
+    TERMINATOR = '\0'
 
     def __init__(self):
-        self.children = [None] * 27
+        self.children = [None] * 255
 
     def insert(self, word: str):
         p = self
 
         for i, ch in enumerate(word):
-            c = ord(ch) - Trie.OFFSET
+            c = ord(ch)
             if p.children[c] is None:
                 p.children[c] = Trie()
             p = p.children[c]
@@ -25,7 +21,7 @@ class Trie:
         for ch in word:
             if p is None:
                 break
-            p = p.children[ord(ch) - Trie.OFFSET]
+            p = p.children[ord(ch)]
 
         if p is None or p.children[Trie.TERMINATOR] is None:
             return False
@@ -34,9 +30,7 @@ class Trie:
 
     @staticmethod
     def make_safe(word: str) -> str:
-        regex = re.compile('[^a-z]')
-
-        return regex.sub('', word.lower())
+        return ''.join(ch for ch in word if ord(ch) < 128)
 
 
 if __name__ == '__main__':

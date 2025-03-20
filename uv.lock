@@ -5,6 +5,7 @@ requires-python = ">=3.13"
 [manifest]
 members = [
     "lab4",
+    "lab5",
     "ri",
     "trie",
 ]
@@ -78,6 +79,17 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.3" },
     { name = "trie", editable = "packages/trie" },
 ]
+
+[[package]]
+name = "lab5"
+version = "0.1.0"
+source = { virtual = "Lab5" }
+dependencies = [
+    { name = "trie" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "trie", editable = "packages/trie" }]
 
 [[package]]
 name = "requests"

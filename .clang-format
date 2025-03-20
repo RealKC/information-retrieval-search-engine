@@ -1,4 +1,15 @@
 ---
+Language: C
+BasedOnStyle: WebKit
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+IndentPPDirectives: AfterHash
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+QualifierAlignment: Right
+
+---
 Language: Cpp
 BasedOnStyle: WebKit
 SpaceAfterTemplateKeyword: false
@@ -13,17 +24,3 @@ BraceWrapping:
 NamespaceIndentation: None
 QualifierAlignment: Right
 
----
-Language: C
-BasedOnStyle: WebKit
-SpaceAfterTemplateKeyword: false
-AlignEscapedNewlines: Left
-AlignTrailingComments: true
-BreakBeforeInheritanceComma: true
-BreakConstructorInitializers: BeforeComma
-IndentPPDirectives: AfterHash
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction: true
-NamespaceIndentation: None
-QualifierAlignment: Right

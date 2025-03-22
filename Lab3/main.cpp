@@ -6,53 +6,90 @@
 
 namespace fs = std::filesystem;
 
-using usize = std::size_t;
-using std::println;
-
 struct PathInfo {
     fs::path full_path;
     std::string basename;
 };
 
+template<typename K, typename V>
+class BTreeTraits {
+public:
+    using Key = K;
+    using FindBy = K const&;
+    using Value = V;
+
+    static std::size_t hash(FindBy value)
+    {
+        return std::hash<FindBy> {}(value);
+    }
+};
+
+template<>
+class BTreeTraits<fs::path, PathInfo> {
+public:
+    using Key = fs::path;
+    using FindBy = std::string_view;
+    using Value = PathInfo;
+
+    // Taken from lab :)
+    static std::size_t hash(FindBy s)
+    {
+        std::size_t hcode = 0;
+        std::size_t R = 31;
+        std::size_t N = 7727;
+
+        for (char ch : s) {
+            hcode = (R * hcode + ch) % N;
+        }
+
+        return hcode;
+    }
+};
+
+template<typename K, typename V, typename Traits = BTreeTraits<K, V>>
 class BTree {
     // Implementation based on https://www.geeksforgeeks.org/implementation-of-b-plus-tree-in-c/
 public:
+    using Key = typename Traits::Key;
+    using FindBy = typename Traits::FindBy;
+    using Value = typename Traits::Value;
+
     BTree()
         : m_root { create_node(true) }
     {
         m_root->is_leaf = true;
     }
 
-    void insert(fs::path const& path, PathInfo info)
+    void insert(Key const& path, Value value)
     {
-        auto key = hash_str(info.basename);
+        auto key = Traits::hash(value.basename);
         auto* root = m_root;
         if (root->n == 2 * BRANCHING_FACTOR - 1) {
             auto* new_root = create_node(false);
             new_root->children[0] = root;
             split_node(new_root, 0, root);
-            insert_non_full(new_root, key, info);
+            insert_non_full(new_root, key, value);
             m_root = new_root;
         } else {
-            insert_non_full(root, key, info);
+            insert_non_full(root, key, value);
         }
     }
 
-    std::optional<PathInfo> find(std::string_view basename)
+    std::optional<Value> find(FindBy basename)
     {
-        auto key = hash_str(basename);
+        auto key = Traits::hash(basename);
         return search_recursive(m_root, key);
     }
 
 private:
-    static constexpr usize BRANCHING_FACTOR = 3;
+    static constexpr std::size_t BRANCHING_FACTOR = 3;
 
     struct Node {
         Node* children[2 * BRANCHING_FACTOR];
-        usize keys[2 * BRANCHING_FACTOR - 1];
-        usize n;
+        std::size_t keys[2 * BRANCHING_FACTOR - 1];
+        std::size_t n;
 
-        std::optional<PathInfo> data[2 * BRANCHING_FACTOR - 1];
+        std::optional<Value> data[2 * BRANCHING_FACTOR - 1];
 
         bool is_leaf;
     };
@@ -70,7 +107,7 @@ private:
         return node;
     }
 
-    void insert_non_full(Node* node, usize key, PathInfo value)
+    void insert_non_full(Node* node, std::size_t key, Value value)
     {
         int i = node->n - 1;
 
@@ -134,7 +171,7 @@ private:
         parent->n++;
     }
 
-    std::optional<PathInfo> search_recursive(Node* node, usize key)
+    std::optional<Value> search_recursive(Node* node, std::size_t key)
     {
         int i = 0;
 
@@ -152,20 +189,6 @@ private:
 
         return search_recursive(node->children[i], key);
     }
-
-    // Taken from lab :)
-    usize hash_str(std::string_view s)
-    {
-        usize hcode = 0;
-        usize R = 31;
-        usize N = 7727;
-
-        for (char ch : s) {
-            hcode = (R * hcode + ch) % N;
-        }
-
-        return hcode;
-    }
 };
 
 int main(int argc, char* argv[])
@@ -178,23 +201,23 @@ int main(int argc, char* argv[])
     auto to_explore = fs::canonical(fs::path { std::string { argv[1] } });
     auto needle = std::string { argv[2] };
 
-    println("To explore: {}", to_explore.c_str());
+    std::println("To explore: {}", to_explore.c_str());
 
     auto iterator = fs::recursive_directory_iterator { to_explore };
-    BTree tree;
+    BTree<fs::path, PathInfo> tree;
 
     for (auto& child : iterator) {
         std::println("Child: {}", child.path().c_str());
         tree.insert(child.path(), PathInfo { child.path(), child.path().filename().string() });
     }
 
-    println("finding now...");
+    std::println("finding now...");
 
     auto path_info = tree.find(needle);
     if (path_info.has_value()) {
-        println("{}: {}", path_info->basename, path_info->full_path.c_str());
+        std::println("{}: {}", path_info->basename, path_info->full_path.c_str());
     } else {
-        println("Could not find {}", needle);
+        std::println("Could not find {}", needle);
     }
 
     return 0;

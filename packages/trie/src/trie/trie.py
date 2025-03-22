@@ -4,7 +4,7 @@ class Trie:
     TERMINATOR = ord('\0')
 
     def __init__(self):
-        self.children = [None] * 255
+        self.children = [None] * 128
 
     def insert(self, word: str):
         p = self

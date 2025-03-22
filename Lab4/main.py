@@ -9,21 +9,20 @@ import requests
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='StopwordCounter',
-        description='Counts stopwords in a webpage'
+        prog="StopwordCounter", description="Counts stopwords in a webpage"
     )
 
-    parser.add_argument('url')
+    parser.add_argument("url")
 
     args = parser.parse_args()
 
     r = requests.get(args.url)
 
     if r.status_code != 200:
-        print(f'failed with status code {r.status_code}')
+        print(f"failed with status code {r.status_code}")
         return
 
-    soup = BeautifulSoup(r.text, features='html.parser')
+    soup = BeautifulSoup(r.text, features="html.parser")
 
     noise = Counter()
     total = 0
@@ -36,9 +35,11 @@ def main():
             noise[safe] += 1
             total += 1
 
-    print(f'Webpage {soup.title.get_text()} ({args.url}) has {total} instances of noise words')
+    print(
+        f"Webpage {soup.title.get_text()} ({args.url}) has {total} instances of noise words"
+    )
     for word, count in noise.items():
-        print(f'{word}: {count}')
+        print(f"{word}: {count}")
 
 
 if __name__ == "__main__":

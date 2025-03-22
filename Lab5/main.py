@@ -5,18 +5,20 @@ from trie import Trie
 import stemmer
 import os
 
+
 def parse_word_file(path: str) -> Trie:
     trie = Trie()
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for word in f:
             word = word.strip()
 
-            if len(word) == 0 or word.startswith('#'):
+            if len(word) == 0 or word.startswith("#"):
                 continue
 
             trie.insert(word)
 
     return trie
+
 
 def main():
     parser = ArgumentParser("dindexer")
@@ -34,7 +36,7 @@ def main():
     directory = os.fsencode(args.directory_to_index)
     for file in os.listdir(directory):
         words = Counter()
-        with open(os.path.join(directory, file), 'r') as f:
+        with open(os.path.join(directory, file), "r") as f:
             for line in f:
                 for word in line.split():
                     if exceptions.contains(word):
@@ -46,7 +48,8 @@ def main():
                         words[stem] += 1
         direct_index.insert(file, words)
 
-    print(f'find a.txt? {direct_index.find('a.txt')}')
+    print(f"find a.txt? {direct_index.find('a.txt')}")
+
 
 if __name__ == "__main__":
     main()

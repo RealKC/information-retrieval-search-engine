@@ -1,7 +1,8 @@
 from typing import Self
 
+
 class Trie:
-    TERMINATOR = ord('\0')
+    TERMINATOR = ord("\0")
 
     def __init__(self):
         self.children = [None] * 128
@@ -39,15 +40,15 @@ class Trie:
 
     @staticmethod
     def make_safe(word: str) -> str:
-        return ''.join(ch for ch in word if ord(ch) < 128)
+        return "".join(ch for ch in word if ord(ch) < 128)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     trie = Trie()
 
-    trie.insert('hello')
-    trie.insert('world')
-    trie.insert('president')
+    trie.insert("hello")
+    trie.insert("world")
+    trie.insert("president")
 
-    print(f'has "world"? {trie.contains('world')}')
-    print(f'has "hell"? {trie.contains('hell')}')
+    print(f'has "world"? {trie.contains("world")}')
+    print(f'has "hell"? {trie.contains("hell")}')

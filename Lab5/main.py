@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from bplustree import BPlusTree
 from collections import Counter
 from trie import Trie
 import stemmer
@@ -8,6 +9,8 @@ def parse_word_file(path: str) -> Trie:
     trie = Trie()
     with open(path, 'r') as f:
         for word in f:
+            word = word.strip()
+
             if len(word) == 0 or word.startswith('#'):
                 continue
 
@@ -26,6 +29,8 @@ def main():
     exceptions = parse_word_file(args.exceptions)
     stopwords = parse_word_file(args.stopwords)
 
+    direct_index = BPlusTree()
+
     directory = os.fsencode(args.directory_to_index)
     for file in os.listdir(directory):
         words = Counter()
@@ -39,7 +44,9 @@ def main():
                     else:
                         stem = stemmer.stem(word)
                         words[stem] += 1
+        direct_index.insert(file, words)
 
+    print(f'find a.txt? {direct_index.find('a.txt')}')
 
 if __name__ == "__main__":
     main()

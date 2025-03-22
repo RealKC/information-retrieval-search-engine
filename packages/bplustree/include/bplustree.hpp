@@ -11,6 +11,11 @@ public:
     using FindBy = K const&;
     using Value = V;
 
+    static FindBy to_find_by(Key const& key)
+    {
+        return key;
+    }
+
     static std::size_t hash(FindBy value)
     {
         return std::hash<FindBy> {}(value);
@@ -33,7 +38,7 @@ public:
 
     void insert(Key const& path, Value value)
     {
-        auto key = Traits::hash(value.basename);
+        auto key = Traits::hash(Traits::to_find_by(path));
         auto* root = m_root;
         if (root->n == 2 * BRANCHING_FACTOR - 1) {
             auto* new_root = create_node(false);
@@ -46,9 +51,9 @@ public:
         }
     }
 
-    std::optional<Value> find(FindBy basename)
+    std::optional<Value> find(FindBy find_by)
     {
-        auto key = Traits::hash(basename);
+        auto key = Traits::hash(find_by);
         return search_recursive(m_root, key);
     }
 

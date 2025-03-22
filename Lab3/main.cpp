@@ -19,6 +19,11 @@ public:
     using FindBy = std::string_view;
     using Value = PathInfo;
 
+    static FindBy to_find_by(Key const& key)
+    {
+        return key.filename().c_str();
+    }
+
     // Taken from lab :)
     static std::size_t hash(FindBy s)
     {

@@ -15,253 +15,142 @@ struct PathInfo {
 };
 
 class BTree {
+    // Implementation based on https://www.geeksforgeeks.org/implementation-of-b-plus-tree-in-c/
 public:
     BTree()
-        : m_root {}
+        : m_root { create_node(true) }
     {
+        m_root->is_leaf = true;
     }
 
-    void insert(fs::path const& path)
+    void insert(fs::path const& path, PathInfo info)
     {
-
-        auto basename = path.stem().string();
-        auto key = hash_str(basename.c_str());
-
-        println("insert: {} -> {}", basename, key);
-
-        fs::path p = path;
-        auto path_info = new PathInfo { std::move(p), std::move(basename) };
-        p = fs::path {};
-
-        if (!m_root) {
-            m_root = new Node;
-            m_root->key_count = 1;
-            m_root->keys[0] = key;
-            m_root->leaf_data = new LeafData { path_info, nullptr };
+        auto key = hash_str(info.basename);
+        auto* root = m_root;
+        if (root->n == 2 * BRANCHING_FACTOR - 1) {
+            auto* new_root = create_node(false);
+            new_root->children[0] = root;
+            split_node(new_root, 0, root);
+            insert_non_full(new_root, key, info);
+            m_root = new_root;
         } else {
-            Node* cursor = m_root;
-            Node* parent = nullptr;
-
-            while (!cursor->is_leaf()) {
-                parent = cursor;
-
-                for (usize i = 0; i < cursor->key_count; ++i) {
-                    if (key < cursor->keys[i]) {
-                        cursor = cursor->children[i];
-                        break;
-                    }
-
-                    if (i == cursor->key_count - 1) {
-                        cursor = cursor->children[i + 1];
-                        break;
-                    }
-                }
-            }
-
-            if (cursor->key_count < MAX) {
-                usize i = 0;
-                while (key > cursor->keys[i] && i < cursor->key_count)
-                    i++;
-                for (usize j = cursor->key_count; j > i; j--) {
-                    cursor->keys[j] = cursor->keys[j - 1];
-                }
-                for (usize j = cursor->key_count + 1; j > i + 1; j--) {
-                    cursor->children[j] = cursor->children[j - 1];
-                }
-                cursor->keys[i] = key;
-                cursor->key_count++;
-                cursor->children[cursor->key_count] = cursor->children[cursor->key_count - 1];
-                cursor->children[cursor->key_count - 1] = nullptr;
-            } else {
-                Node* new_leaf = new Node;
-                usize virtual_node[MAX + 1];
-                for (usize i = 0; i < MAX; i++) {
-                    virtual_node[i] = cursor->keys[i];
-                }
-                usize i = 0, j;
-                while (key > virtual_node[i] && i < MAX)
-                    i++;
-                for (usize j = MAX + 1; j > i; j--) {
-                    virtual_node[j] = virtual_node[j - 1];
-                }
-                virtual_node[i] = key;
-                new_leaf->leaf_data = new LeafData { path_info, nullptr };
-                cursor->key_count = (MAX + 1) / 2;
-                new_leaf->key_count = MAX + 1 - (MAX + 1) / 2;
-                cursor->children[cursor->key_count] = new_leaf;
-                new_leaf->children[new_leaf->key_count] = cursor->children[MAX];
-                cursor->children[MAX] = NULL;
-                for (i = 0; i < cursor->key_count; i++) {
-                    cursor->keys[i] = virtual_node[i];
-                }
-                for (i = 0, j = cursor->key_count; i < new_leaf->key_count; i++, j++) {
-                    new_leaf->keys[i] = virtual_node[j];
-                }
-                if (cursor == m_root) {
-                    Node* new_root = new Node;
-                    new_root->keys[0] = new_leaf->keys[0];
-                    new_root->children[0] = cursor;
-                    new_root->children[1] = new_leaf;
-                    new_root->key_count = 1;
-                    new_root->leaf_data = new LeafData { path_info, nullptr };
-                    m_root = new_root;
-                } else {
-                    insert_internal(new_leaf->keys[0], path_info, parent, new_leaf);
-                }
-            }
+            insert_non_full(root, key, info);
         }
     }
 
-    PathInfo* find(std::string_view basename)
+    std::optional<PathInfo> find(std::string_view basename)
     {
         auto key = hash_str(basename);
-        println("find: {} -> {}", basename, key);
-
-        if (!m_root) {
-            return nullptr;
-        } else {
-            Node* cursor = m_root;
-            while (!cursor->is_leaf()) {
-                for (usize i = 0; i < cursor->key_count; i++) {
-                    if (key < cursor->keys[i]) {
-                        cursor = cursor->children[i];
-                        break;
-                    }
-                    if (i == cursor->key_count - 1) {
-                        cursor = cursor->children[i + 1];
-                        break;
-                    }
-                }
-            }
-            for (usize i = 0; i < cursor->key_count; i++) {
-                if (cursor->keys[i] == key) {
-                    return cursor->leaf_data->path_info;
-                }
-            }
-        }
-
-        return nullptr;
+        return search_recursive(m_root, key);
     }
 
 private:
-    static constexpr usize MAX = 3;
-
-    struct LeafData {
-        PathInfo* path_info;
-        LeafData* next;
-    };
+    static constexpr usize BRANCHING_FACTOR = 3;
 
     struct Node {
-        Node* children[MAX + 1];
-        usize keys[MAX];
-        usize key_count;
+        Node* children[2 * BRANCHING_FACTOR];
+        usize keys[2 * BRANCHING_FACTOR - 1];
+        usize n;
 
-        // Only present for leaf nodes
-        LeafData* leaf_data;
+        std::optional<PathInfo> data[2 * BRANCHING_FACTOR - 1];
 
-        [[nodiscard]] bool is_leaf() noexcept
-        {
-            return leaf_data != nullptr;
-        }
+        bool is_leaf;
     };
 
     Node* m_root;
 
-    Node* search_tree(Node* node, usize key, std::string_view basename)
+    Node* create_node(bool is_leaf)
     {
-        if (node->is_leaf()) {
-            return node;
+        auto* node = new Node;
+        node->is_leaf = is_leaf;
+        for (int i = 0; i < std::size(node->children); ++i) {
+            node->children[i] = new Node;
         }
-
-        for (usize i = 0; i < node->key_count - 1; ++i) {
-            if (key < node->keys[i]) {
-                return search_tree(node->children[i], key, basename);
-            }
-
-            if (key == node->keys[i] && key < node->keys[key + 1]) {
-                return search_tree(node->children[i + 1], key, basename);
-            }
-        }
-
-        return search_tree(node->children[node->key_count - 1], key, basename);
+        node->n = 0;
+        return node;
     }
 
-    void insert_internal(usize key, PathInfo* path_info, Node* cursor, Node* child)
+    void insert_non_full(Node* node, usize key, PathInfo value)
     {
-        if (cursor->key_count < MAX) {
-            usize i = 0;
-            while (key > cursor->keys[i] && i < cursor->key_count)
-                i++;
-            for (usize j = cursor->key_count; j > i; j--) {
-                cursor->keys[j] = cursor->keys[j - 1];
+        int i = node->n - 1;
+
+        if (node->is_leaf) {
+            while (i >= 0 && node->keys[i] > key) {
+                node->keys[i + 1] = node->keys[i];
+                if (node->data[i].has_value()) {
+                    node->data[i + 1] = node->data[i];
+                }
+                i--;
             }
-            for (usize j = cursor->key_count + 1; j > i + 1; j--) {
-                cursor->children[j] = cursor->children[j - 1];
-            }
-            cursor->keys[i] = key;
-            cursor->key_count++;
-            cursor->children[i + 1] = child;
+
+            node->keys[i + 1] = key;
+            node->data[i + 1] = value;
+            node->n++;
         } else {
-            Node* new_internal = new Node;
-            usize virtual_key[MAX + 1];
-            Node* virtual_ptr[MAX + 2];
-            for (usize i = 0; i < MAX; i++) {
-                virtual_key[i] = cursor->keys[i];
+            while (i >= 0 && node->keys[i] > key) {
+                i--;
             }
-            for (usize i = 0; i < MAX + 1; i++) {
-                virtual_ptr[i] = cursor->children[i];
+            i++;
+
+            if (node->children[i]->n == 2 * BRANCHING_FACTOR - 1) {
+                split_node(node, i, node->children[i]);
+                if (node->keys[i] < key) {
+                    i++;
+                }
             }
-            usize i = 0, j;
-            while (key > virtual_key[i] && i < MAX)
-                i++;
-            for (usize j = MAX + 1; j > i; j--) {
-                virtual_key[j] = virtual_key[j - 1];
-            }
-            virtual_key[i] = key;
-            for (usize j = MAX + 2; j > i + 1; j--) {
-                virtual_ptr[j] = virtual_ptr[j - 1];
-            }
-            virtual_ptr[i + 1] = child;
-            cursor->key_count = (MAX + 1) / 2;
-            new_internal->key_count = MAX - (MAX + 1) / 2;
-            for (i = 0, j = cursor->key_count + 1; i < new_internal->key_count; i++, j++) {
-                new_internal->keys[i] = virtual_key[j];
-            }
-            for (i = 0, j = cursor->key_count + 1; i < new_internal->key_count + 1; i++, j++) {
-                new_internal->children[i] = virtual_ptr[j];
-            }
-            if (cursor == m_root) {
-                Node* new_root = new Node;
-                new_root->keys[0] = virtual_key[cursor->key_count];
-                new_root->children[0] = cursor;
-                new_root->children[1] = new_internal;
-                new_root->key_count = 1;
-                new_root->leaf_data = nullptr;
-                m_root = new_root;
-            } else {
-                insert_internal(cursor->keys[cursor->key_count], path_info, find_parent(m_root, cursor), new_internal);
-            }
+            insert_non_full(node->children[i], key, value);
         }
     }
 
-    Node* find_parent(Node* cursor, Node* child)
+    void split_node(Node* parent, int i, Node* child)
     {
-        Node* parent = nullptr;
-        if (cursor->is_leaf() || (cursor->children[0])->is_leaf()) {
-            return nullptr;
-        }
+        auto* new_child = create_node(child->is_leaf);
+        new_child->n = BRANCHING_FACTOR - 1;
 
-        for (usize i = 0; i < cursor->key_count + 1; i++) {
-            if (cursor->children[i] == child) {
-                parent = cursor;
-                return parent;
-            } else {
-                parent = find_parent(cursor->children[i], child);
-                if (parent != nullptr)
-                    return parent;
+        for (int j = 0; j < BRANCHING_FACTOR - 1; ++j) {
+            new_child->keys[j] = child->keys[j + BRANCHING_FACTOR];
+            if (new_child->is_leaf) {
+                new_child->data[j] = child->data[j + BRANCHING_FACTOR];
             }
         }
-        return parent;
+
+        if (!child->is_leaf) {
+            for (int j = 0; j < BRANCHING_FACTOR; ++j) {
+                new_child->children[j] = child->children[j + BRANCHING_FACTOR];
+            }
+        }
+
+        child->n = BRANCHING_FACTOR - 1;
+
+        for (int j = parent->n; j >= i + 1; --j) {
+            parent->children[j + 1] = parent->children[j];
+        }
+        parent->children[i + 1] = new_child;
+
+        for (int j = parent->n - 1; j >= i; --j) {
+            parent->keys[j + 1] = parent->keys[j];
+        }
+        parent->keys[i] = child->keys[BRANCHING_FACTOR - 1];
+        parent->n++;
+    }
+
+    std::optional<PathInfo> search_recursive(Node* node, usize key)
+    {
+        int i = 0;
+
+        while (i < node->n && key > node->keys[i]) {
+            i++;
+        }
+
+        if (i < node->n && key == node->keys[i]) {
+            return node->data[i];
+        }
+
+        if (node->is_leaf) {
+            return std::nullopt;
+        }
+
+        return search_recursive(node->children[i], key);
     }
 
     // Taken from lab :)
@@ -295,14 +184,18 @@ int main(int argc, char* argv[])
     BTree tree;
 
     for (auto& child : iterator) {
-        // std::println("Child: {}", child.path().c_str());
-        tree.insert(child.path());
+        std::println("Child: {}", child.path().c_str());
+        tree.insert(child.path(), PathInfo { child.path(), child.path().filename().string() });
     }
 
     println("finding now...");
 
     auto path_info = tree.find(needle);
-    println("{}: {}", path_info->basename, path_info->full_path.c_str());
+    if (path_info.has_value()) {
+        println("{}: {}", path_info->basename, path_info->full_path.c_str());
+    } else {
+        println("Could not find {}", needle);
+    }
 
     return 0;
 }

@@ -10,16 +10,17 @@ class Trie:
     def insert(self, word: str):
         p = self
 
-        for i, ch in enumerate(word):
+        for ch in word:
             c = ord(ch)
             if p.children[c] is None:
                 p.children[c] = Trie()
             p = p.children[c]
 
-        if i != 0:
+        if len(word) != 0:
             p.children[Trie.TERMINATOR] = p
 
     def contains(self, word: str) -> bool:
+        word = Trie.make_safe(word)
         p = self
         for ch in word:
             if p is None:

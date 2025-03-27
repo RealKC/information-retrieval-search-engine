@@ -19,9 +19,8 @@ def parse_word_file(path: str) -> Trie:
 
             word = word.lower()
             trie.insert(word)
-            if '\'' in word:
-                trie.insert(re.sub('\'', '', word))
-
+            if "'" in word:
+                trie.insert(re.sub("'", "", word))
 
     return trie
 
@@ -29,7 +28,7 @@ def parse_word_file(path: str) -> Trie:
 def remove_special_characters(word: str) -> str:
     word = Trie.make_safe(word.lower())
 
-    return re.sub(r'[\#\$\[\]\(\)\{\}\*\.\,%&_=;:\-\?!]*', '', word)
+    return re.sub(r"[\#\$\[\]\(\)\{\}\*\.\,%&_=;:\-\?!]*", "", word)
 
 
 def is_exception(exceptions: Trie, word: str) -> bool:
@@ -70,7 +69,7 @@ def main():
                         words[stem] += 1
         direct_index.insert(file, words)
 
-    print(f"{direct_index.find("HayFever.book.txt")}")
+    print(f"{direct_index.find('HayFever.book.txt')}")
 
 
 if __name__ == "__main__":

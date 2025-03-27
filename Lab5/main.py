@@ -17,7 +17,11 @@ def parse_word_file(path: str) -> Trie:
             if len(word) == 0 or word.startswith("#"):
                 continue
 
-            trie.insert(word.lower())
+            word = word.lower()
+            trie.insert(word)
+            if '\'' in word:
+                trie.insert(re.sub('\'', '', word))
+
 
     return trie
 

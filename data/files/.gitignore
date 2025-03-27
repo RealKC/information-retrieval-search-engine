@@ -1,0 +1,2 @@
+# ignore the books themselves because they're a bit big for the repo
+*.book.txt

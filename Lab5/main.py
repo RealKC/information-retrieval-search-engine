@@ -1,4 +1,6 @@
 from argparse import ArgumentParser
+from functools import reduce
+import re
 from bplustree import BPlusTree
 from collections import Counter
 from trie import Trie
@@ -15,9 +17,22 @@ def parse_word_file(path: str) -> Trie:
             if len(word) == 0 or word.startswith("#"):
                 continue
 
-            trie.insert(word)
+            trie.insert(word.lower())
 
     return trie
+
+
+def remove_special_characters(word: str) -> str:
+    word = Trie.make_safe(word.lower())
+
+    return re.sub(r'[\#\$\[\]\(\)\{\}\*\.\,%&_=;:\-\?!]*', '', word)
+
+
+def is_exception(exceptions: Trie, word: str) -> bool:
+    if exceptions.contains(word):
+        return True
+
+    return reduce(lambda acc, ch: acc or ch.isdigit(), word, False)
 
 
 def main():
@@ -39,7 +54,10 @@ def main():
         with open(os.path.join(directory, file), "r") as f:
             for line in f:
                 for word in line.split():
-                    if exceptions.contains(word):
+                    word = remove_special_characters(word)
+                    if len(word) == 0:
+                        continue
+                    elif is_exception(exceptions, word):
                         words[word] += 1
                     elif stopwords.contains(word):
                         continue
@@ -48,7 +66,7 @@ def main():
                         words[stem] += 1
         direct_index.insert(file, words)
 
-    print(f"find a.txt? {direct_index.find('a.txt')}")
+    print(f"{direct_index.find("HayFever.book.txt")}")
 
 
 if __name__ == "__main__":

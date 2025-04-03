@@ -1,13 +1,15 @@
 from typing import Self
 
 
-class Trie:
+class Trie[V = None]:
     TERMINATOR = ord("\0")
+
+    data: V = None
 
     def __init__(self):
         self.children = [None] * 128
 
-    def insert(self, word: str):
+    def insert(self, word: str, data: V = None):
         p = self
 
         for ch in word:
@@ -18,6 +20,7 @@ class Trie:
 
         if len(word) != 0:
             p.children[Trie.TERMINATOR] = p
+            p.data = data
 
     def contains(self, word: str) -> bool:
         word = Trie.make_safe(word)

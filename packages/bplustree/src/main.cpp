@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <tuple>
 
 #include <bplustree.hpp>
 
@@ -25,12 +26,40 @@ public:
 
 using PyBPlusTree = BPlusTree<py::object, py::object>;
 
+struct PyBPlusTreeIterator {
+    PyBPlusTreeIterator(PyBPlusTree const& tree, py::object ref)
+        : ref { ref }
+    {
+        tree.iterate([&](py::object key, py::object value) {
+            leaf_data.push_back(std::tuple { key, value });
+        });
+    }
+
+    std::tuple<py::object, py::object> next()
+    {
+        if (index == leaf_data.size()) {
+            throw py::stop_iteration();
+        }
+
+        return leaf_data[index++];
+    }
+
+    std::vector<std::tuple<py::object, py::object>> leaf_data {};
+    py::object ref; // keep the Python object alive
+    std::size_t index = 0;
+};
+
 PYBIND11_MODULE(_core, m)
 {
     m.doc() = "Adds a B+ Tree data structure";
 
+    py::class_<PyBPlusTreeIterator>(m, "PyBPlusTreeIterator")
+        .def("__iter__", [](PyBPlusTreeIterator& it) -> PyBPlusTreeIterator& { return it; })
+        .def("__next__", &PyBPlusTreeIterator::next);
+
     py::class_<PyBPlusTree>(m, "BPlusTree")
         .def(py::init<>())
+        .def("__iter__", [](py::object obj) { return PyBPlusTreeIterator { obj.cast<PyBPlusTree const&>(), obj }; })
         .def("insert", &PyBPlusTree::insert)
         .def("find", &PyBPlusTree::find);
 }

@@ -44,10 +44,10 @@ public:
             auto* new_root = create_node(false);
             new_root->children[0] = root;
             split_node(new_root, 0, root);
-            insert_non_full(new_root, key, value);
+            insert_non_full(new_root, key, path, value);
             m_root = new_root;
         } else {
-            insert_non_full(root, key, value);
+            insert_non_full(root, key, path, value);
         }
     }
 
@@ -55,6 +55,12 @@ public:
     {
         auto key = Traits::hash(find_by);
         return search_recursive(m_root, key);
+    }
+
+    template<typename Callback>
+    void iterate(Callback const& callback) const
+    {
+        iterate_inner(m_root, callback);
     }
 
 private:
@@ -65,6 +71,7 @@ private:
         std::size_t keys[2 * BRANCHING_FACTOR - 1];
         std::size_t n;
 
+        std::optional<Key> key_data[2 * BRANCHING_FACTOR - 1];
         std::optional<Value> data[2 * BRANCHING_FACTOR - 1];
 
         bool is_leaf;
@@ -83,13 +90,16 @@ private:
         return node;
     }
 
-    void insert_non_full(Node* node, std::size_t key, Value value)
+    void insert_non_full(Node* node, std::size_t key, Key key_data, Value value)
     {
         int i = node->n - 1;
 
         if (node->is_leaf) {
             while (i >= 0 && node->keys[i] > key) {
                 node->keys[i + 1] = node->keys[i];
+                if (node->key_data[i].has_value()) {
+                    node->key_data[i + 1] = node->key_data[i];
+                }
                 if (node->data[i].has_value()) {
                     node->data[i + 1] = node->data[i];
                 }
@@ -97,6 +107,7 @@ private:
             }
 
             node->keys[i + 1] = key;
+            node->key_data[i + 1] = key_data;
             node->data[i + 1] = value;
             node->n++;
         } else {
@@ -111,7 +122,7 @@ private:
                     i++;
                 }
             }
-            insert_non_full(node->children[i], key, value);
+            insert_non_full(node->children[i], key, key_data, value);
         }
     }
 
@@ -123,6 +134,7 @@ private:
         for (int j = 0; j < BRANCHING_FACTOR - 1; ++j) {
             new_child->keys[j] = child->keys[j + BRANCHING_FACTOR];
             if (new_child->is_leaf) {
+                new_child->key_data[j] = child->key_data[j + BRANCHING_FACTOR];
                 new_child->data[j] = child->data[j + BRANCHING_FACTOR];
             }
         }
@@ -164,5 +176,19 @@ private:
         }
 
         return search_recursive(node->children[i], key);
+    }
+
+    template<typename Callback>
+    void iterate_inner(Node* node, Callback const& callback) const
+    {
+        if (node->is_leaf) {
+            for (int i = 0; i < node->n - 1; ++i) {
+                callback(*node->key_data[i], *node->data[i]);
+            }
+        } else {
+            for (int i = 0; i < node->n; ++i) {
+                iterate_inner(node->children[i], callback);
+            }
+        }
     }
 };

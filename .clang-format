@@ -1,17 +1,6 @@
----
-Language: C
 BasedOnStyle: WebKit
-AlignEscapedNewlines: Left
-AlignTrailingComments: true
-IndentPPDirectives: AfterHash
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction: true
-QualifierAlignment: Right
-
 ---
 Language: Cpp
-BasedOnStyle: WebKit
 SpaceAfterTemplateKeyword: false
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
@@ -23,4 +12,3 @@ BraceWrapping:
   AfterFunction: true
 NamespaceIndentation: None
 QualifierAlignment: Right
-

@@ -63,9 +63,13 @@ PYBIND11_MODULE(_core, m)
         .def("__iter__", [](PyBPlusTreeIterator& it) -> PyBPlusTreeIterator& { return it; })
         .def("__next__", &PyBPlusTreeIterator::next);
 
-    py::class_<PyBPlusTree>(m, "BPlusTree")
-        .def(py::init<>())
-        .def("__iter__", [](py::object obj) { return PyBPlusTreeIterator { obj.cast<PyBPlusTree const&>(), obj }; })
-        .def("insert", &PyBPlusTree::insert)
-        .def("find", &PyBPlusTree::find);
+    auto cls = py::class_<PyBPlusTree>(m, "BPlusTree")
+                   .def(py::init<>())
+                   .def("__iter__", [](py::object obj) { return PyBPlusTreeIterator { obj.cast<PyBPlusTree const&>(), obj }; })
+                   .def("insert", &PyBPlusTree::insert)
+                   .def("find", &PyBPlusTree::find);
+
+    auto generic_alias = py::module_::import("types").attr("GenericAlias");
+
+    cls.def_static("__class_getitem__", [generic_alias, cls](py::args const& args) { return generic_alias(cls, args); });
 }

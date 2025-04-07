@@ -1,3 +1,4 @@
+#include <iostream>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <tuple>
@@ -21,6 +22,11 @@ public:
     static std::size_t hash(FindBy value)
     {
         return py::hash(value);
+    }
+
+    static bool is_equal(FindBy a, FindBy b)
+    {
+        return a.is(b);
     }
 };
 

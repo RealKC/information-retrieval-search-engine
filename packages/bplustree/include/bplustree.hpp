@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <functional>
 #include <optional>
+#include <utility>
+#include <vector>
 
 template<typename K, typename V>
 class BPlusTreeTraits {
@@ -19,6 +21,11 @@ public:
     static std::size_t hash(FindBy value)
     {
         return std::hash<FindBy> {}(value);
+    }
+
+    static bool is_equal(FindBy a, FindBy b)
+    {
+        return a == b;
     }
 };
 
@@ -54,7 +61,7 @@ public:
     std::optional<Value> find(FindBy find_by)
     {
         auto key = Traits::hash(find_by);
-        return search_recursive(m_root, key);
+        return search_recursive(m_root, key, find_by);
     }
 
     template<typename Callback>
@@ -71,8 +78,7 @@ private:
         std::size_t keys[2 * BRANCHING_FACTOR - 1];
         std::size_t n;
 
-        std::optional<Key> key_data[2 * BRANCHING_FACTOR - 1];
-        std::optional<Value> data[2 * BRANCHING_FACTOR - 1];
+        std::vector<std::pair<Key, Value>> data[2 * BRANCHING_FACTOR - 1];
 
         bool is_leaf;
     };
@@ -97,18 +103,12 @@ private:
         if (node->is_leaf) {
             while (i >= 0 && node->keys[i] > key) {
                 node->keys[i + 1] = node->keys[i];
-                if (node->key_data[i].has_value()) {
-                    node->key_data[i + 1] = node->key_data[i];
-                }
-                if (node->data[i].has_value()) {
-                    node->data[i + 1] = node->data[i];
-                }
+                node->data[i + 1] = std::move(node->data[i]);
                 i--;
             }
 
             node->keys[i + 1] = key;
-            node->key_data[i + 1] = key_data;
-            node->data[i + 1] = value;
+            node->data[i + 1].push_back({ key_data, value });
             node->n++;
         } else {
             while (i >= 0 && node->keys[i] > key) {
@@ -134,7 +134,6 @@ private:
         for (int j = 0; j < BRANCHING_FACTOR - 1; ++j) {
             new_child->keys[j] = child->keys[j + BRANCHING_FACTOR];
             if (new_child->is_leaf) {
-                new_child->key_data[j] = child->key_data[j + BRANCHING_FACTOR];
                 new_child->data[j] = child->data[j + BRANCHING_FACTOR];
             }
         }
@@ -159,7 +158,7 @@ private:
         parent->n++;
     }
 
-    std::optional<Value> search_recursive(Node* node, std::size_t key)
+    std::optional<Value> search_recursive(Node* node, std::size_t key, FindBy find_by)
     {
         int i = 0;
 
@@ -168,14 +167,20 @@ private:
         }
 
         if (i < node->n && key == node->keys[i]) {
-            return node->data[i];
+            for (auto& entry : node->data[i]) {
+                if (Traits::is_equal(entry.first, find_by)) {
+                    return entry.second;
+                }
+            }
+
+            return std::nullopt;
         }
 
         if (node->is_leaf) {
             return std::nullopt;
         }
 
-        return search_recursive(node->children[i], key);
+        return search_recursive(node->children[i], key, find_by);
     }
 
     template<typename Callback>
@@ -183,7 +188,11 @@ private:
     {
         if (node->is_leaf) {
             for (int i = 0; i < node->n - 1; ++i) {
-                callback(*node->key_data[i], *node->data[i]);
+                if (node->data[i].size() > 0) {
+                    for (auto& entry : node->data[i]) {
+                        callback(entry.first, entry.second);
+                    }
+                }
             }
         } else {
             for (int i = 0; i < node->n; ++i) {

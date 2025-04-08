@@ -21,6 +21,7 @@ std::string stem_word(std::string_view word)
 
     auto* z = create_stemmer();
     auto new_end = stem(z, alpha.data(), alpha.size() - 1) + 1;
+    free_stemmer(z);
 
     return alpha.substr(0, new_end);
 }

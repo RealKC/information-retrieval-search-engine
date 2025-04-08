@@ -6,10 +6,10 @@
 #include <memory>
 #include <string_view>
 
-namespace py = pybind11;
-
 std::string stem_word(std::string_view word)
 {
+    using stemmer_ptr = std::unique_ptr<stemmer, decltype(&free_stemmer)>;
+
     std::string alpha;
     alpha.reserve(word.size());
 
@@ -19,9 +19,8 @@ std::string stem_word(std::string_view word)
         }
     }
 
-    auto* z = create_stemmer();
-    auto new_end = stem(z, alpha.data(), alpha.size() - 1) + 1;
-    free_stemmer(z);
+    stemmer_ptr z(create_stemmer(), &free_stemmer);
+    auto new_end = stem(z.get(), alpha.data(), alpha.size() - 1) + 1;
 
     return alpha.substr(0, new_end);
 }

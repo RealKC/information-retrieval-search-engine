@@ -4,6 +4,7 @@
 
 #include <cctype>
 #include <memory>
+#include <stdexcept>
 #include <string_view>
 
 std::string stem_word(std::string_view word)
@@ -26,6 +27,9 @@ std::string stem_word(std::string_view word)
     }
 
     auto new_end = stem(z.get(), alpha.data(), alpha.size() - 1) + 1;
+    if (new_end < 0) {
+        throw std::runtime_error("word stemming returned a negative integer as the new end of the string");
+    }
 
     return alpha.substr(0, new_end);
 }

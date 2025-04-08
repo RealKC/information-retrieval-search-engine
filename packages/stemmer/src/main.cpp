@@ -20,6 +20,11 @@ std::string stem_word(std::string_view word)
     }
 
     stemmer_ptr z(create_stemmer(), &free_stemmer);
+
+    if (!z) {
+        throw std::bad_alloc();
+    }
+
     auto new_end = stem(z.get(), alpha.data(), alpha.size() - 1) + 1;
 
     return alpha.substr(0, new_end);

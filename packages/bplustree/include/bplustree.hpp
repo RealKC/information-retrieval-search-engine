@@ -81,18 +81,23 @@ public:
         }
     }
 
-    void insert(Key const& path, Value value)
+    void insert(Key const& key_data, Value value)
     {
-        auto key = Traits::hash(Traits::to_find_by(path));
+        auto key = Traits::hash(Traits::to_find_by(key_data));
         auto* root = m_root;
+
+        if (insert_conflicting(root, key, key_data, value)) {
+            return;
+        }
+
         if (root->n == 2 * BRANCHING_FACTOR - 1) {
             auto* new_root = create_node(false);
             new_root->children[0] = root;
             split_node(new_root, 0, root);
-            insert_non_full(new_root, key, path, value);
+            insert_non_full(new_root, key, key_data, value);
             m_root = new_root;
         } else {
-            insert_non_full(root, key, path, value);
+            insert_non_full(root, key, key_data, value);
         }
     }
 
@@ -137,14 +142,31 @@ private:
         return node;
     }
 
+    bool insert_conflicting(Node* node, std::size_t key, Key key_data, Value value)
+    {
+        for (auto i = 0uz; node->n > 0 && i < node->n - 1; ++i) {
+            if (node->keys[i] == key) {
+                node->data[i].push_back({ key_data, value });
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void insert_non_full(Node* node, std::size_t key, Key key_data, Value value)
     {
         int i = node->n - 1;
 
         if (node->is_leaf) {
+            if (insert_conflicting(node, key, key_data, value)) {
+                return;
+            }
+
             while (i >= 0 && node->keys[i] > key) {
                 node->keys[i + 1] = node->keys[i];
                 node->data[i + 1] = std::move(node->data[i]);
+                node->data[i] = std::vector<std::pair<Key, Value>> {};
                 i--;
             }
 
@@ -175,7 +197,7 @@ private:
         for (int j = 0; j < BRANCHING_FACTOR - 1; ++j) {
             new_child->keys[j] = child->keys[j + BRANCHING_FACTOR];
             if (new_child->is_leaf) {
-                new_child->data[j] = child->data[j + BRANCHING_FACTOR];
+                new_child->data[j] = std::move(child->data[j + BRANCHING_FACTOR]);
             }
         }
 

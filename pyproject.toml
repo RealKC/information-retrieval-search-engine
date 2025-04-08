@@ -10,7 +10,7 @@ dependencies = []
 trie = { workspace = true }
 
 [tool.uv.workspace]
-members = ["packages/*", "Lab4", "Lab5"]
+members = ["packages/*", "Lab4", "Lab5", "Lab6"]
 
 [dependency-groups]
 dev = [

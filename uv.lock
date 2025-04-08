@@ -5,8 +5,10 @@ requires-python = ">=3.13"
 [manifest]
 members = [
     "bplustree",
+    "indexing",
     "lab4",
     "lab5",
+    "lab6",
     "ri",
     "stemmer",
     "trie",
@@ -71,6 +73,23 @@ wheels = [
 ]
 
 [[package]]
+name = "indexing"
+version = "0.1.0"
+source = { editable = "packages/indexing" }
+dependencies = [
+    { name = "bplustree" },
+    { name = "stemmer" },
+    { name = "trie" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bplustree", editable = "packages/bplustree" },
+    { name = "stemmer", editable = "packages/stemmer" },
+    { name = "trie", editable = "packages/trie" },
+]
+
+[[package]]
 name = "lab4"
 version = "0.1.0"
 source = { virtual = "Lab4" }
@@ -103,6 +122,17 @@ requires-dist = [
     { name = "stemmer", editable = "packages/stemmer" },
     { name = "trie", editable = "packages/trie" },
 ]
+
+[[package]]
+name = "lab6"
+version = "0.1.0"
+source = { virtual = "Lab6" }
+dependencies = [
+    { name = "indexing" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "indexing", editable = "packages/indexing" }]
 
 [[package]]
 name = "requests"

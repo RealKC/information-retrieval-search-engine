@@ -4,6 +4,7 @@ from typing import Iterable
 from bplustree import BPlusTree
 import stemmer
 from trie.trie import Trie
+import os
 
 from .utils import remove_special_characters, is_exception
 
@@ -29,6 +30,6 @@ def build_direct_index(
                 else:
                     stem = stemmer.stem(word)
                     words[stem] += 1
-        direct_index.insert(file.name.decode("utf-8"), words)
+        direct_index.insert(os.path.basename(file.name.decode("utf-8")), words)
 
     return direct_index

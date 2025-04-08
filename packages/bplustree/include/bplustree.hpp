@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <optional>
+#include <queue>
+#include <unordered_set>
 #include <utility>
-#include <vector>
 
 template<typename K, typename V>
 class BPlusTreeTraits {
@@ -41,6 +43,42 @@ public:
         : m_root { create_node(true) }
     {
         m_root->is_leaf = true;
+    }
+
+    ~BPlusTree() noexcept
+    {
+        std::queue<Node*> nodes;
+        nodes.push(m_root);
+
+        std::unordered_set<Node*> to_free;
+
+        try {
+            while (!nodes.empty()) {
+                auto* top = nodes.front();
+                nodes.pop();
+
+                if (!top) {
+                    continue;
+                }
+
+                for (auto i = 0uz; i < std::size(top->children); ++i) {
+                    if (!top->children[i]) {
+                        continue;
+                    }
+
+                    nodes.push(top->children[i]);
+                }
+
+                to_free.insert(top);
+            }
+        } catch (std::bad_alloc const&) {
+            // there's not much we can do if we fail allocating memory while collecting the nodes...
+            return;
+        }
+
+        for (auto* node : to_free) {
+            delete node;
+        }
     }
 
     void insert(Key const& path, Value value)
@@ -90,8 +128,11 @@ private:
         auto* node = new Node;
         node->is_leaf = is_leaf;
         for (int i = 0; i < std::size(node->children); ++i) {
-            node->children[i] = new Node;
+            node->children[i] = nullptr;
         }
+
+        std::memset(node->keys, 0, sizeof(node->keys));
+
         node->n = 0;
         return node;
     }

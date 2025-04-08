@@ -8,11 +8,13 @@ dependencies = []
 
 [tool.uv.sources]
 trie = { workspace = true }
+scripts = { workspace = true }
 
 [tool.uv.workspace]
-members = ["packages/*", "Lab4", "Lab5", "Lab6"]
+members = ["packages/*", "Lab4", "Lab5", "Lab6", "scripts"]
 
 [dependency-groups]
 dev = [
     "ruff>=0.11.2",
+    "scripts",
 ]

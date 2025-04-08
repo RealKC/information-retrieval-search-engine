@@ -10,6 +10,7 @@ members = [
     "lab5",
     "lab6",
     "ri",
+    "scripts",
     "stemmer",
     "trie",
 ]
@@ -157,12 +158,16 @@ source = { virtual = "." }
 [package.dev-dependencies]
 dev = [
     { name = "ruff" },
+    { name = "scripts" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.11.2" }]
+dev = [
+    { name = "ruff", specifier = ">=0.11.2" },
+    { name = "scripts", editable = "scripts" },
+]
 
 [[package]]
 name = "ruff"
@@ -188,6 +193,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/86/54/3c12d3af58012a5e2cd7ebdbe9983f4834af3f8cbea0e8a8c74fa1e23b2b/ruff-0.11.2-py3-none-win_amd64.whl", hash = "sha256:3170150172a8f994136c0c66f494edf199a0bbea7a409f649e4bc8f4d7084080", size = 11373713 },
     { url = "https://files.pythonhosted.org/packages/d6/d4/dd813703af8a1e2ac33bf3feb27e8a5ad514c9f219df80c64d69807e7f71/ruff-0.11.2-py3-none-win_arm64.whl", hash = "sha256:52933095158ff328f4c77af3d74f0379e34fd52f175144cefc1b192e7ccd32b4", size = 10441990 },
 ]
+
+[[package]]
+name = "scripts"
+version = "0.1.0"
+source = { editable = "scripts" }
 
 [[package]]
 name = "soupsieve"

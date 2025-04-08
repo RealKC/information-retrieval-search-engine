@@ -26,7 +26,13 @@ public:
 
     static bool is_equal(FindBy a, FindBy b)
     {
-        return a.is(b);
+        auto eq = a.attr("__eq__");
+
+        if (eq.is_none()) {
+            return a.is(b);
+        }
+
+        return eq(b).cast<bool>();
     }
 };
 

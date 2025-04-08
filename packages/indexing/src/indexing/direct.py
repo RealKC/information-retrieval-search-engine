@@ -12,7 +12,7 @@ def build_direct_index(
     files: Iterable[TextIOWrapper],
     stopwords: Trie,
     exceptions: Trie,
-) -> BPlusTree:
+) -> BPlusTree[str, Counter]:
     direct_index = BPlusTree()
 
     for file in files:
@@ -29,6 +29,6 @@ def build_direct_index(
                 else:
                     stem = stemmer.stem(word)
                     words[stem] += 1
-        direct_index.insert(file, words)
+        direct_index.insert(file.name.decode("utf-8"), words)
 
     return direct_index

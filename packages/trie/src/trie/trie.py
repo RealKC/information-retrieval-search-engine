@@ -1,3 +1,4 @@
+from collections.abc import Generator
 from typing import Self
 
 
@@ -46,6 +47,26 @@ class Trie[V = None]:
 
         return p
 
+    def __iter__(self):
+        return self._iterate("")
+
+    def _iterate(self, word: str) -> Generator[tuple[str, V]]:
+        if self is None:
+            return
+
+        if self.children[Trie.TERMINATOR] is not None and self.data is not None:
+            yield word, self.data
+
+        for idx, child in enumerate(self.children):
+            if idx == Trie.TERMINATOR:
+                continue
+
+            if child is not None:
+                # NOTE: This could be optimized to not rebuild words (which creates a ton of temporary strings that can't really be GCed...)
+                #       if we stored the full words in the terminator nodes, but that would increase the overall memory footprint of the Trie,
+                #       which would be bad in situations where we don't need iteration...
+                yield from child._iterate(f"{word}{chr(idx)}")
+
     @staticmethod
     def partial_search(ch: str, node: Self | None):
         if node is None:
@@ -59,11 +80,14 @@ class Trie[V = None]:
 
 
 if __name__ == "__main__":
-    trie = Trie()
+    trie = Trie[str]()
 
-    trie.insert("hello")
-    trie.insert("world")
-    trie.insert("president")
+    trie.insert("hello", "1")
+    trie.insert("world", "2")
+    trie.insert("president", "3")
 
     print(f'has "world"? {trie.contains("world")}')
     print(f'has "hell"? {trie.contains("hell")}')
+
+    for word, data in trie:
+        print(f"{word}: {data}")

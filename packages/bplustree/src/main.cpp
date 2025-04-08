@@ -1,8 +1,8 @@
+#include <bplustree.hpp>
+#include <iterator>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <tuple>
-
-#include <bplustree.hpp>
 
 namespace py = pybind11;
 
@@ -38,26 +38,32 @@ public:
 using PyBPlusTree = BPlusTree<py::object, py::object>;
 
 struct PyBPlusTreeIterator {
+    // I'd love for this to be a member type of `BPlusTree` but I couldn't figure out how do that
+    using RawIterator = decltype(std::declval<PyBPlusTree>().elements().begin());
+
     PyBPlusTreeIterator(PyBPlusTree const& tree, py::object ref)
-        : ref { ref }
+        : generator { tree.elements() }
+        , iterator { generator.begin() }
+        , ref { ref }
     {
-        tree.iterate([&](py::object key, py::object value) {
-            leaf_data.push_back(std::tuple { key, value });
-        });
     }
 
     std::tuple<py::object, py::object> next()
     {
-        if (index == leaf_data.size()) {
+        if (iterator == std::default_sentinel) {
             throw py::stop_iteration();
         }
 
-        return leaf_data[index++];
+        auto next = *iterator;
+        ++iterator;
+
+        return next;
     }
 
-    std::vector<std::tuple<py::object, py::object>> leaf_data {};
+    std::generator<PyBPlusTree::Entry> generator;
+    RawIterator iterator;
+
     py::object ref; // keep the Python object alive
-    std::size_t index = 0;
 };
 
 PYBIND11_MODULE(_core, m)

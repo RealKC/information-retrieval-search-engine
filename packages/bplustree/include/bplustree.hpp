@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <generator>
 #include <optional>
 #include <queue>
 #include <unordered_set>
@@ -38,6 +39,7 @@ public:
     using Key = typename Traits::Key;
     using FindBy = typename Traits::FindBy;
     using Value = typename Traits::Value;
+    using Entry = std::pair<Key, Value>;
 
     BPlusTree()
         : m_root { create_node(true) }
@@ -107,10 +109,9 @@ public:
         return search_recursive(m_root, key, find_by);
     }
 
-    template<typename Callback>
-    void iterate(Callback const& callback) const
+    std::generator<Entry> elements() const noexcept
     {
-        iterate_inner(m_root, callback);
+        return elements(m_root);
     }
 
 private:
@@ -121,7 +122,7 @@ private:
         std::size_t keys[2 * BRANCHING_FACTOR - 1];
         std::size_t n;
 
-        std::vector<std::pair<Key, Value>> data[2 * BRANCHING_FACTOR - 1];
+        std::vector<Entry> data[2 * BRANCHING_FACTOR - 1];
 
         bool is_leaf;
     };
@@ -166,7 +167,7 @@ private:
             while (i >= 0 && node->keys[i] > key) {
                 node->keys[i + 1] = node->keys[i];
                 node->data[i + 1] = std::move(node->data[i]);
-                node->data[i] = std::vector<std::pair<Key, Value>> {};
+                node->data[i] = std::vector<Entry> {};
                 i--;
             }
 
@@ -246,20 +247,19 @@ private:
         return search_recursive(node->children[i], key, find_by);
     }
 
-    template<typename Callback>
-    void iterate_inner(Node* node, Callback const& callback) const
+    std::generator<Entry> elements(Node* node) const noexcept
     {
         if (node->is_leaf) {
             for (int i = 0; i < node->n - 1; ++i) {
                 if (node->data[i].size() > 0) {
                     for (auto& entry : node->data[i]) {
-                        callback(entry.first, entry.second);
+                        co_yield entry;
                     }
                 }
             }
         } else {
             for (int i = 0; i < node->n; ++i) {
-                iterate_inner(node->children[i], callback);
+                co_yield std::ranges::elements_of(elements(node->children[i]));
             }
         }
     }

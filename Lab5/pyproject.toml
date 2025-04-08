@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["trie", "stemmer", "bplustree"]
+dependencies = ["trie", "bplustree", "indexing"]
 
 [tool.uv.sources]
 bplustree = { workspace = true }
 trie = { workspace = true }
-stemmer = { workspace = true }
+indexing = { workspace = true }

@@ -112,14 +112,14 @@ version = "0.1.0"
 source = { virtual = "Lab5" }
 dependencies = [
     { name = "bplustree" },
-    { name = "stemmer" },
+    { name = "indexing" },
     { name = "trie" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "bplustree", editable = "packages/bplustree" },
-    { name = "stemmer", editable = "packages/stemmer" },
+    { name = "indexing", editable = "packages/indexing" },
     { name = "trie", editable = "packages/trie" },
 ]
 

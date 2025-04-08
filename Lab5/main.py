@@ -1,28 +1,11 @@
+import os
+import re
 from argparse import ArgumentParser
 from functools import reduce
-import re
-from bplustree import BPlusTree
-from collections import Counter
+
+from indexing.direct import build_direct_index
+from indexing.utils import parse_word_file
 from trie import Trie
-import stemmer
-import os
-
-
-def parse_word_file(path: str) -> Trie:
-    trie = Trie()
-    with open(path, "r") as f:
-        for word in f:
-            word = word.strip()
-
-            if len(word) == 0 or word.startswith("#"):
-                continue
-
-            word = word.lower()
-            trie.insert(word)
-            if "'" in word:
-                trie.insert(re.sub("'", "", word))
-
-    return trie
 
 
 def remove_special_characters(word: str) -> str:
@@ -49,25 +32,13 @@ def main():
     exceptions = parse_word_file(args.exceptions)
     stopwords = parse_word_file(args.stopwords)
 
-    direct_index = BPlusTree()
-
+    files = []
     directory = os.fsencode(args.directory_to_index)
     for file in os.listdir(directory):
-        words = Counter()
-        with open(os.path.join(directory, file), "r") as f:
-            for line in f:
-                for word in line.split():
-                    word = remove_special_characters(word)
-                    if len(word) == 0:
-                        continue
-                    elif is_exception(exceptions, word):
-                        words[word] += 1
-                    elif stopwords.contains(word):
-                        continue
-                    else:
-                        stem = stemmer.stem(word)
-                        words[stem] += 1
-        direct_index.insert(file, words)
+        if not file.endswith(b".book.txt"):
+            continue
+        files.append(open(os.path.join(directory, file), "r"))
+    direct_index = build_direct_index(files, stopwords, exceptions)
 
     print(f"{direct_index.find('HayFever.book.txt')}")
 

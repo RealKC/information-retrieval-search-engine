@@ -16,12 +16,17 @@ template<>
 class BPlusTreeTraits<fs::path, PathInfo> {
 public:
     using Key = fs::path;
-    using FindBy = std::string_view;
+    using FindBy = fs::path;
     using Value = PathInfo;
 
     static FindBy to_find_by(Key const& key)
     {
-        return key.filename().c_str();
+        return key.filename();
+    }
+
+    static bool is_equal(Key a, FindBy b)
+    {
+        return a.filename() == b;
     }
 
     // Taken from lab :)
@@ -31,7 +36,7 @@ public:
         std::size_t R = 31;
         std::size_t N = 7727;
 
-        for (char ch : s) {
+        for (char ch : s.filename().string()) {
             hcode = (R * hcode + ch) % N;
         }
 

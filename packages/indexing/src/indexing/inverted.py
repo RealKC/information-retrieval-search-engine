@@ -1,8 +1,9 @@
+import math
 from collections import Counter
 from typing import Iterable
+
 from bplustree import BPlusTree
 from trie import Trie
-import math
 
 
 class IndexData:

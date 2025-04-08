@@ -1,8 +1,9 @@
-from argparse import ArgumentParser
 import os
-from indexing.utils import parse_word_file
+from argparse import ArgumentParser
+
 from indexing.direct import build_direct_index
 from indexing.inverted import build_inverted_index
+from indexing.utils import parse_word_file
 
 
 def main():

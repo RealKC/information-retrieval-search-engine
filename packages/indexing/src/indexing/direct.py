@@ -1,12 +1,13 @@
+import os
 from collections import Counter
 from io import TextIOWrapper
 from typing import Iterable
-from bplustree import BPlusTree
-import stemmer
-from trie.trie import Trie
-import os
 
-from .utils import remove_special_characters, is_exception
+import stemmer
+from bplustree import BPlusTree
+from trie.trie import Trie
+
+from .utils import is_exception, remove_special_characters
 
 
 def build_direct_index(

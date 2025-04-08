@@ -1,5 +1,6 @@
-from functools import reduce
 import re
+from functools import reduce
+
 from trie.trie import Trie
 
 

@@ -1,10 +1,10 @@
-from bs4 import BeautifulSoup
+import argparse
 from collections import Counter
+
+import requests
+from bs4 import BeautifulSoup
 from stopwords import STOPWORDS
 from trie import Trie
-
-import argparse
-import requests
 
 
 def main():

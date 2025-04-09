@@ -32,7 +32,7 @@ public:
     }
 };
 
-template<typename K, typename V, typename Traits = BPlusTreeTraits<K, V>>
+template<typename K, typename V, typename Traits = BPlusTreeTraits<K, V>, std::size_t BRANCHING_FACTOR = 3>
 class BPlusTree {
     // Implementation based on https://www.geeksforgeeks.org/implementation-of-b-plus-tree-in-c/
 public:
@@ -115,8 +115,6 @@ public:
     }
 
 private:
-    static constexpr std::size_t BRANCHING_FACTOR = 3;
-
     struct Node {
         Node* children[2 * BRANCHING_FACTOR];
         std::size_t keys[2 * BRANCHING_FACTOR - 1];

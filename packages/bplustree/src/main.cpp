@@ -35,7 +35,7 @@ public:
     }
 };
 
-using PyBPlusTree = BPlusTree<py::object, py::object>;
+using PyBPlusTree = BPlusTree<py::object, py::object, BPlusTreeTraits<py::object, py::object>, 16>;
 
 struct PyBPlusTreeIterator {
     // I'd love for this to be a member type of `BPlusTree` but I couldn't figure out how do that

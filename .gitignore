@@ -6,3 +6,5 @@ build/
 
 # Created by clangd
 .cache/
+
+*.log

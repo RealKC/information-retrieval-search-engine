@@ -15,8 +15,8 @@ def build_direct_index(
     files: Iterable[TextIOWrapper],
     stopwords: Trie,
     exceptions: Trie,
-) -> BPlusTree[str, Counter]:
-    direct_index = BPlusTree[str, Counter]()
+) -> BPlusTree[str, Counter[str, int]]:
+    direct_index = BPlusTree[str, Counter[str, int]]()
 
     for file in files:
         words = Counter()

@@ -29,7 +29,9 @@ class IndexData:
         return self.document_tfs.keys()
 
 
-def build_inverted_index(direct_index: BPlusTree[str, Counter]) -> Trie[IndexData]:
+def build_inverted_index(
+    direct_index: BPlusTree[str, Counter[str, int]],
+) -> Trie[IndexData]:
     inverted_index = Trie[IndexData]()
     document_count = 0
 

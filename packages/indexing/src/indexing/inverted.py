@@ -46,6 +46,6 @@ def build_inverted_index(
                 inverted_index.insert(word, IndexData({document_id: frequency}, 1))
 
     for _, index_data in inverted_index:
-        index_data.idf = math.log(document_count / (1 + index_data.idf))
+        index_data.idf = max(math.log(document_count / (1 + index_data.idf)), 0)
 
     return inverted_index

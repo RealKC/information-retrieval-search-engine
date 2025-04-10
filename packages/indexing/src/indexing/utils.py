@@ -11,6 +11,9 @@ def remove_special_characters(word: str) -> str:
 
 
 def is_exception(exceptions: Trie, word: str) -> bool:
+    if len(word) == 0:
+        return False
+
     if exceptions.contains(word):
         return True
 

@@ -9,8 +9,10 @@ members = [
     "lab4",
     "lab5",
     "lab6",
+    "lab7",
     "ri",
     "scripts",
+    "searchfuncs",
     "stemmer",
     "trie",
 ]
@@ -136,6 +138,21 @@ dependencies = [
 requires-dist = [{ name = "indexing", editable = "packages/indexing" }]
 
 [[package]]
+name = "lab7"
+version = "0.1.0"
+source = { virtual = "Lab7" }
+dependencies = [
+    { name = "indexing" },
+    { name = "searchfuncs" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "indexing", editable = "packages/indexing" },
+    { name = "searchfuncs", editable = "packages/searchfuncs" },
+]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 source = { registry = "https://pypi.org/simple" }
@@ -198,6 +215,23 @@ wheels = [
 name = "scripts"
 version = "0.1.0"
 source = { editable = "scripts" }
+
+[[package]]
+name = "searchfuncs"
+version = "0.1.0"
+source = { editable = "packages/searchfuncs" }
+dependencies = [
+    { name = "indexing" },
+    { name = "stemmer" },
+    { name = "trie" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "indexing", editable = "packages/indexing" },
+    { name = "stemmer", editable = "packages/stemmer" },
+    { name = "trie", editable = "packages/trie" },
+]
 
 [[package]]
 name = "soupsieve"

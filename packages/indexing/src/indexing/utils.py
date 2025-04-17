@@ -8,7 +8,7 @@ from trie.trie import Trie
 def remove_special_characters(word: str) -> str:
     word = Trie.make_safe(word.lower())
 
-    return re.sub(r"[\#\$\[\]\(\)\{\}\*\.\,%&_=;:\-\?!]*", "", word)
+    return re.sub(r"[\#\$\[\]\(\)\{\}\*\.\,%&_=;:\-\?!\"]*", "", word)
 
 
 def is_exception(exceptions: Trie, word: str) -> bool:

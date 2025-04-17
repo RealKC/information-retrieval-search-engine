@@ -3,15 +3,9 @@ name = "searchfuncs"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "Dumitru Mițca", email = "dumitru0mitca@gmail.com" }
-]
+authors = [{ name = "Dumitru Mițca", email = "dumitru0mitca@gmail.com" }]
 requires-python = ">=3.13"
-dependencies = [
-    "indexing",
-    "stemmer",
-    "trie",
-]
+dependencies = ["indexing", "trie"]
 
 [build-system]
 requires = ["hatchling"]
@@ -19,5 +13,4 @@ build-backend = "hatchling.build"
 
 [tool.uv.sources]
 indexing = { workspace = true }
-stemmer = { workspace = true }
 trie = { workspace = true }

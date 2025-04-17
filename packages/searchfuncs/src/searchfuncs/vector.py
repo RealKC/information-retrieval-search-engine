@@ -3,9 +3,8 @@ from collections import Counter
 from collections.abc import Iterable
 from functools import reduce
 
-import stemmer
 from indexing.inverted import IndexData
-from indexing.utils import is_exception
+from indexing.utils import process_word_for_indexing
 from trie.trie import Trie
 
 
@@ -39,18 +38,16 @@ def cosine_similarity(doc1: dict[str, float], doc2: dict[str, float]) -> float:
 
 
 def _parse_query(
-    query: str, inverted_index: Trie[IndexData], exceptions: Trie
+    query: str, inverted_index: Trie[IndexData], stopwords: Trie, exceptions: Trie
 ) -> dict[str, float]:
     tf = Counter()
 
     stems = []
 
     for word in query.split():
-        stem = stemmer.stem(word)
-        if is_exception(exceptions, word):
+        word = process_word_for_indexing(word, stopwords, exceptions)
+        if word is not None:
             stems.append(word)
-        else:
-            stems.append(stem)
 
     for word in stems:
         tf[word] += 1
@@ -64,8 +61,10 @@ def _parse_query(
     return result
 
 
-def search(query, inverted_index: Trie[IndexData], exceptions: Trie) -> set[str]:
-    parsed = _parse_query(query, inverted_index, exceptions)
+def search(
+    query, inverted_index: Trie[IndexData], stopwords: Trie, exceptions: Trie
+) -> set[str]:
+    parsed = _parse_query(query, inverted_index, stopwords, exceptions)
 
     interest_set = set()
 

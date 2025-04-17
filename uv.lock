@@ -222,14 +222,12 @@ version = "0.1.0"
 source = { editable = "packages/searchfuncs" }
 dependencies = [
     { name = "indexing" },
-    { name = "stemmer" },
     { name = "trie" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "indexing", editable = "packages/indexing" },
-    { name = "stemmer", editable = "packages/stemmer" },
     { name = "trie", editable = "packages/trie" },
 ]
 

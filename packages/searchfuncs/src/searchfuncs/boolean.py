@@ -53,13 +53,22 @@ def search(query, inverted_index: Trie[IndexData]) -> set[str]:
     result = set()
 
     for word in parsed["OR"]:
-        result.update(interest_set[word])
+        try:
+            result.update(interest_set[word])
+        except KeyError:
+            continue
 
     for word in parsed["NOT"]:
-        result.difference_update(interest_set[word])
+        try:
+            result.difference_update(interest_set[word])
+        except KeyError:
+            continue
 
     must_have_docs = set()
     for word in parsed["AND"]:
-        must_have_docs.update(interest_set[word])
+        try:
+            must_have_docs.update(interest_set[word])
+        except KeyError:
+            continue
 
     return result if not must_have_docs else result.intersection(must_have_docs)

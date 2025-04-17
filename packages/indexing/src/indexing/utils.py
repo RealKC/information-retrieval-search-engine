@@ -1,6 +1,7 @@
 import re
 from functools import reduce
 
+import stemmer
 from trie.trie import Trie
 
 
@@ -35,3 +36,23 @@ def parse_word_file(path: str) -> Trie:
                 trie.insert(re.sub("'", "", word))
 
     return trie
+
+
+def process_word_for_indexing(
+    word: str,
+    stopwords: Trie,
+    exceptions: Trie,
+) -> str | None:
+    word = remove_special_characters(word)
+    stem = stemmer.stem(word)
+
+    if len(word) == 0 or len(stem) == 0:
+        return None
+    elif is_exception(exceptions, word):
+        return word
+    elif is_exception(exceptions, stem):
+        return stem
+    elif stopwords.contains(word) or stopwords.contains(stem):
+        return None
+    else:
+        return stem

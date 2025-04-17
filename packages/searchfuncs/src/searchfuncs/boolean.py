@@ -20,18 +20,18 @@ def _parse_query(query: str, stopwords: Trie, exceptions: Trie) -> _Query:
     not_ = set()
 
     for word in words:
-        if word.startswith("&"):
-            word = process_word_for_indexing(word[1:], stopwords, exceptions)
+        if word.startswith('"') and word.endswith('"'):
+            word = process_word_for_indexing(word, stopwords, exceptions)
             if word is not None:
                 and_.add(word)
-        elif word.startswith("|"):
-            word = process_word_for_indexing(word[1:], stopwords, exceptions)
-            if word is not None:
-                or_.add(word)
-        elif word.startswith("~"):
+        elif word.startswith("-"):
             word = process_word_for_indexing(word[1:], stopwords, exceptions)
             if word is not None:
                 not_.add(word)
+        else:
+            word = process_word_for_indexing(word, stopwords, exceptions)
+            if word is not None:
+                or_.add(word)
 
     return {"AND": and_, "NOT": not_, "OR": or_}
 

@@ -10,8 +10,12 @@ requires-python = ">=3.13"
 dependencies = [
     "beautifulsoup4>=4.13.3",
     "requests>=2.32.3",
+    "robotstxt",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+robotstxt = { workspace = true }

@@ -1,25 +1,77 @@
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from bs4 import BeautifulSoup
 from requests import codes
 from urllib.parse import urljoin
+from urllib3.util import parse_url as parse_url
 import requests
-
-
+from robotstxt import RobotsTxt, USER_AGENT
 
 
 class Crawler:
-    USER_AGENT = "RI Web Crawler (dumitru.mitca@student.tuiasi.ro)"
-
     page_hashes: set[int]
+    max_visits: int
+    visit_count: int
 
-    def __init__(self):
+    robots: dict[str, RobotsTxt]
+
+    html_parser: str
+
+    def __init__(self, max_visits: int = 500, html_parser: str = "html.parser"):
         self.page_hashes = set()
+        self.max_visits = max_visits
+        self.visit_count = 0
+        self.robots = {}
+        self.html_parser = html_parser
+
+    def is_allowed(self, url: str) -> bool:
+        parsed = parse_url(url)
+        scheme = parsed.scheme
+        domain = parsed.netloc
+        if domain in self.robots:
+            return self.robots[domain].is_allowed(url)
+
+        robots_txt_url = f"{scheme}://{domain}/robots.txt"
+        try:
+            robots_txt_data = requests.get(robots_txt_url)
+        except:
+            return False
+
+        if robots_txt_data.status_code == codes.not_found:
+            robots = RobotsTxt.from_contents("User-Agent: *\nDisallow:\n")
+        else:
+            robots = RobotsTxt.from_contents(robots_txt_data.text)
+
+        self.robots[domain] = robots
+        return robots.is_allowed(url)
+
+    def get_crawl_delay(self, url: str) -> int:
+        domain = parse_url(url).netloc
+
+        if domain in self.robots:
+            delay = self.robots[domain].crawl_delay()
+            return delay if delay is not None else 1
+
+        return 1
+
+    def mark_as_visited(self, url: str, page_text: str):
+        pass
+
+    def was_visited(self, url: str) -> bool:
+        return False
 
     def handle_url(self, url: str):
         pass
 
-    def crawl(self, url: str) -> str:
-        resp = requests.get(url, headers={"User-Agent": Crawler.USER_AGENT})
+    def crawl(self, url: str) -> str | None:
+        if self.was_visited(url):
+            return None
+
+        self.visit_count += 1
+
+        try:
+            resp = requests.get(url, headers={"User-Agent": USER_AGENT})
+        except:
+            return None
 
         if resp.status_code == codes.no_content:
             return None
@@ -27,16 +79,12 @@ class Crawler:
         if resp.headers["Content-Type"] not in ["text/html", "application/xhtml+xml"]:
             return None
 
-        soup = BeautifulSoup(resp.text)
+        soup = BeautifulSoup(resp.text, self.html_parser)
 
         page_text = soup.find("body").get_text()
-        if (page_hash := hash(page_text)) in self.page_hashes:
-            return None
-        else:
-            self.page_hashes.add(page_hash)
+        self.mark_as_visited(url, page_text)
 
         index_allowed, follow_allowed = _get_local_permissions(resp.headers, soup)
-        print(f"index allowed: {index_allowed}, follow allowed: {follow_allowed}")
 
         if follow_allowed:
             base_url = _get_base_url(url, soup)

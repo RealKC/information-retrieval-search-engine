@@ -8,3 +8,5 @@ build/
 .cache/
 
 *.log
+
+target/

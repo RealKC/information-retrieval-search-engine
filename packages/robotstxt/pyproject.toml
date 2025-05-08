@@ -1,0 +1,19 @@
+[project]
+name = "robotstxt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Mițca Dumitru", email = "dumitru0mitca@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.maturin]
+module-name = "robotstxt._core"
+python-packages = ["robotstxt"]
+python-source = "src"
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"

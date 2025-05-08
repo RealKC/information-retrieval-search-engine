@@ -1,3 +1,3 @@
-import robotstxt._core
+from robotstxt._core import RobotsTxt, USER_AGENT
 
-__all__ = [*robotstxt._core.__all__]
+__all__ = ["RobotsTxt", "USER_AGENT"]

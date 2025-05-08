@@ -39,6 +39,10 @@ impl RobotsTxt {
 
         return self.inner.is_absolute_allowed(&url);
     }
+
+    fn crawl_delay(&self) -> Option<u64> {
+        self.inner.crawl_delay().map(|d| d.as_secs())
+    }
 }
 
 /// A Python module implemented in Rust. The name of this function must match

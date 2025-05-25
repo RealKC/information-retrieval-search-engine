@@ -19,7 +19,8 @@ logger = Logger("url-frontier")
 settings = Settings(_env_file=".env")
 
 
-seedlist = ["https://www.robotstxt.org/"]
+SEEDLIST = ["https://www.robotstxt.org/"]
+MAX_VISITS = 5
 
 
 @dataclass
@@ -37,7 +38,10 @@ class UrlFrontier:
     """
 
     def __init__(self):
-        self.urls = SortedList(key=lambda url: url.available_at)
+        self.urls = SortedList(
+            map(lambda seed: Url(url=seed, available_at=0), SEEDLIST),
+            key=lambda url: url.available_at,
+        )
 
     def add_url(self, url: str, available_at: int):
         # Avoid crawling the same page multiple times
@@ -86,7 +90,10 @@ async def lifespan(app: FastAPI):
     await init_beanie(database=client[settings.mongo_db], document_models=[Domain])
     logger.info("beanie initialized")
 
-    yield {"url_frontier": UrlFrontier()}
+    yield {
+        "url_frontier": UrlFrontier(),
+        "visit_counter": 0,
+    }
 
 
 async def get_url_frontier(request: Request) -> UrlFrontier:
@@ -96,6 +103,17 @@ async def get_url_frontier(request: Request) -> UrlFrontier:
         raise RuntimeError("URL frontier not yet initialized")
 
     return url_frontier
+
+
+async def get_visit_counter(request: Request):
+    visit_counter = getattr(request.state, "visit_counter", None)
+
+    if visit_counter is None:
+        raise RuntimeError("visit counter not yet initialized")
+
+    yield visit_counter
+
+    setattr(request.state, "visit_counter", visit_counter + 1)
 
 
 app = FastAPI(lifespan=lifespan)
@@ -140,8 +158,14 @@ async def add_url(
 
 
 @app.get("/url")
-async def get_url(frontier: Annotated[UrlFrontier, Depends(get_url_frontier)]):
-    print(f"frontier in GET: {frontier.urls}")
+async def get_url(
+    frontier: Annotated[UrlFrontier, Depends(get_url_frontier)],
+    visit_counter: Annotated[int, Depends(get_visit_counter)],
+):
+    print(f"frontier in GET: {frontier.urls}, visits={visit_counter}")
+
+    if visit_counter > MAX_VISITS:
+        return {"url": None}
 
     url = await frontier.get_next_url(now=int(datetime.now().timestamp()))
 

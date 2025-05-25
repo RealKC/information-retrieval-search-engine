@@ -20,7 +20,7 @@ class Crawler(crawlerbits.Crawler):
         if self.is_allowed(url):
             print(f"url={url}")
             urllib3.request(
-                "POST", f"{settings.url_frontier_connection}/url?{quote_plus(url)}"
+                "POST", f"{settings.url_frontier_connection}/url?url={quote_plus(url)}"
             )
 
     def mark_as_visited(self, url: str, page_text: str):

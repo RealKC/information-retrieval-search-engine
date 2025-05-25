@@ -45,8 +45,9 @@ class UrlFrontier:
 
     def add_url(self, url: str, available_at: int):
         # Avoid crawling the same page multiple times
-        for url in self.urls:
-            if url.url == url:
+        for url_elem in self.urls:
+            if url_elem.url == url:
+                print(f"{url_elem.url} == {url}")
                 return
 
         self.urls.add(Url(url=url, available_at=available_at))
@@ -90,9 +91,10 @@ async def lifespan(app: FastAPI):
     await init_beanie(database=client[settings.mongo_db], document_models=[Domain])
     logger.info("beanie initialized")
 
+    setattr(app.state, "visit_counter", 0)
+
     yield {
         "url_frontier": UrlFrontier(),
-        "visit_counter": 0,
     }
 
 
@@ -106,14 +108,17 @@ async def get_url_frontier(request: Request) -> UrlFrontier:
 
 
 async def get_visit_counter(request: Request):
-    visit_counter = getattr(request.state, "visit_counter", None)
+    visit_counter = getattr(request.app.state, "visit_counter", None)
 
     if visit_counter is None:
         raise RuntimeError("visit counter not yet initialized")
 
-    yield visit_counter
+    print(f"visit counter is {visit_counter}")
 
-    setattr(request.state, "visit_counter", visit_counter + 1)
+    try:
+        yield visit_counter
+    finally:
+        setattr(request.app.state, "visit_counter", visit_counter + 1)
 
 
 app = FastAPI(lifespan=lifespan)
@@ -150,9 +155,9 @@ async def add_url(
     domain.last_access = last_access
     await domain.save()
 
-    print(f"got url {url} with domain={domain}")
+    # print(f"got url {url} with domain={domain}")
 
-    print(f"frontier in POST: {frontier.urls}")
+    # print(f"frontier in POST: {frontier.urls}")
 
     return {}
 
@@ -162,7 +167,7 @@ async def get_url(
     frontier: Annotated[UrlFrontier, Depends(get_url_frontier)],
     visit_counter: Annotated[int, Depends(get_visit_counter)],
 ):
-    print(f"frontier in GET: {frontier.urls}, visits={visit_counter}")
+    # print(f"frontier in GET: {frontier.urls}, visits={visit_counter}")
 
     if visit_counter > MAX_VISITS:
         return {"url": None}

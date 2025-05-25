@@ -11,3 +11,6 @@ build/
 
 target/
 *.so
+
+# Created by our crawler
+sites/

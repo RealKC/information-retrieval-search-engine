@@ -1,1 +1,4 @@
 .venv/
+
+# Created by our crawler
+sites/

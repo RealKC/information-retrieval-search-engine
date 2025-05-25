@@ -1,0 +1,16 @@
+[project]
+name = "crawler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "bunnet>=1.3.0",
+    "crawlerbits",
+    "pydantic-settings>=2.9.1",
+    "pymongo>=4.13.0",
+    "urllib3>=2.3.0",
+]
+
+[tool.uv.sources]
+crawlerbits = { workspace = true }

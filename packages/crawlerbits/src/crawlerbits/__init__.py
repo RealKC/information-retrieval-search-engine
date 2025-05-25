@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 from bs4 import BeautifulSoup
 from requests import codes
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urldefrag
 from urllib3.util import parse_url as parse_url
 import requests
 from robotstxt import RobotsTxt, USER_AGENT
@@ -91,6 +91,7 @@ class Crawler:
 
             for a_element in soup.find_all("a", href=True):
                 url = urljoin(base_url, a_element["href"])
+                url = urldefrag(url).url
                 self.handle_url(url)
 
         if index_allowed:

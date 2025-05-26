@@ -31,18 +31,26 @@ class Crawler:
             return self.robots[domain].is_allowed(url)
 
         robots_txt_url = f"{scheme}://{domain}/robots.txt"
-        try:
-            robots_txt_data = requests.get(robots_txt_url)
-        except:
+        robots = self.fetch_robotstxt(robots_txt_url)
+
+        if robots is None:
             return False
+
+        self.robots[domain] = robots
+        return robots.is_allowed(url)
+
+    def fetch_robotstxt(self, url: str) -> RobotsTxt | None:
+        try:
+            robots_txt_data = requests.get(url)
+        except:
+            return None
 
         if robots_txt_data.status_code == codes.not_found:
             robots = RobotsTxt.from_contents("User-Agent: *\nDisallow:\n")
         else:
             robots = RobotsTxt.from_contents(robots_txt_data.text)
 
-        self.robots[domain] = robots
-        return robots.is_allowed(url)
+        return robots
 
     def get_crawl_delay(self, url: str) -> int:
         domain = parse_url(url).netloc

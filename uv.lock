@@ -157,6 +157,8 @@ dependencies = [
     { name = "crawlerbits" },
     { name = "pydantic-settings" },
     { name = "pymongo" },
+    { name = "requests" },
+    { name = "robotstxt" },
     { name = "urllib3" },
 ]
 
@@ -166,6 +168,8 @@ requires-dist = [
     { name = "crawlerbits", editable = "packages/crawlerbits" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "pymongo", specifier = ">=4.13.0" },
+    { name = "requests", specifier = ">=2.32.3" },
+    { name = "robotstxt", editable = "packages/robotstxt" },
     { name = "urllib3", specifier = ">=2.3.0" },
 ]
 

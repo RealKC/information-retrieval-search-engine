@@ -20,7 +20,7 @@ settings = Settings(_env_file=".env")
 
 
 SEEDLIST = ["https://www.robotstxt.org/"]
-MAX_VISITS = 5
+MAX_VISITS = 50
 
 
 @dataclass

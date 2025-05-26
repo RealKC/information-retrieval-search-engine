@@ -1,12 +1,18 @@
 import os
 
 import urllib
-from urllib.parse import quote_plus
+from datetime import datetime
+from urllib.parse import quote_plus, urlparse
+from bunnet import init_bunnet
+from pymongo import MongoClient
+import requests
+from requests.status_codes import codes
+from robotstxt import RobotsTxt
 import crawlerbits
 import urllib3
 import json
 
-from models import Settings
+from models import Domain, Settings
 
 
 settings = Settings(_env_file=".env")
@@ -22,6 +28,31 @@ class Crawler(crawlerbits.Crawler):
             urllib3.request(
                 "POST", f"{settings.url_frontier_connection}/url?url={quote_plus(url)}"
             )
+
+    def fetch_robotstxt(self, url: str) -> RobotsTxt | None:
+        raw_domain = urlparse(url).netloc
+        domain_obj = Domain.find_one(Domain.domain == raw_domain).run()
+
+        if domain_obj is None:
+            try:
+                robots_txt_data = requests.get(url)
+            except:
+                return None
+
+            if robots_txt_data.status_code == codes.not_found:
+                robots = RobotsTxt.from_contents("User-Agent: *\nDisallow:\n")
+            else:
+                robots = RobotsTxt.from_contents(robots_txt_data.text)
+
+            domain_obj = Domain(
+                domain=raw_domain,
+                last_access=int(datetime.now().timestamp()),
+                robotstxt=robots.serialize(),
+            )
+        else:
+            robots = RobotsTxt.deserialize(domain_obj.robotstxt)
+
+        return robots
 
     def mark_as_visited(self, url: str, page_text: str):
         if len(url) == 0:
@@ -51,6 +82,9 @@ def _turn_url_into_path(url: str) -> str:
 
 
 def main():
+    mongo = MongoClient(settings.mongo_connection)
+    init_bunnet(database=mongo[settings.mongo_db], document_models=[Domain])
+
     crawler = Crawler()
 
     while True:

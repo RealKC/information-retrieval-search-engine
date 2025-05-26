@@ -1,0 +1,21 @@
+[project]
+name = "web-search"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "bootstrap-flask>=2.5.0",
+    "flask>=3.1.1",
+    "flask-wtf>=1.2.2",
+    "indexing",
+    "pydantic>=2.11.5",
+    "pydantic-settings>=2.9.1",
+    "searchfuncs",
+    "trie",
+]
+
+[tool.uv.sources]
+trie = { workspace = true }
+searchfuncs = { workspace = true }
+indexing = { workspace = true }

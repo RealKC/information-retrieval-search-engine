@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdlib>
 #include <cstring>
 #include <functional>
@@ -248,7 +247,7 @@ private:
     std::generator<Entry> elements(Node* node) const noexcept
     {
         if (node->is_leaf) {
-            for (int i = 0; i < node->n - 1; ++i) {
+            for (int i = 0; i < node->n; ++i) {
                 if (node->data[i].size() > 0) {
                     for (auto& entry : node->data[i]) {
                         co_yield entry;

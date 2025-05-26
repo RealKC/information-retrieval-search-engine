@@ -4,7 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["indexing", "watchdog>=6.0.0"]
+dependencies = [
+    "bplustree",
+    "indexing",
+    "trie",
+    "watchdog>=6.0.0",
+]
 
 [tool.uv.sources]
 indexing = { workspace = true }
+trie = { workspace = true }
+bplustree = { workspace = true }

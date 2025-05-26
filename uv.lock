@@ -322,13 +322,17 @@ name = "indexerd"
 version = "0.1.0"
 source = { virtual = "Proiect/indexerd" }
 dependencies = [
+    { name = "bplustree" },
     { name = "indexing" },
+    { name = "trie" },
     { name = "watchdog" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "bplustree", editable = "packages/bplustree" },
     { name = "indexing", editable = "packages/indexing" },
+    { name = "trie", editable = "packages/trie" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
 

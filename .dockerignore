@@ -1,4 +1,13 @@
 .venv/
 
+# Not relevant
+
+Lab\*
+data/files
+.vscode
+
+Proiect/docker-volume
+
 # Created by our crawler
+
 sites/

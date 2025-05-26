@@ -10,11 +10,12 @@ COPY . /app
 
 # Install the application dependencies.
 WORKDIR /app
-RUN ls
 RUN uv sync --frozen --no-cache
 
-WORKDIR /app/Proiect/indexerd
+WORKDIR /app/Proiect/web-search
 RUN CC=clang CXX=clang++ uv sync --frozen --no-cache
 
+EXPOSE 5000
+
 # Run the application.
-CMD ["uv", "run", "/app/Proiect/indexerd/main.py"]
+CMD ["/app/.venv/bin/flask", "run", "--port", "5000" ]

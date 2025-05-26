@@ -19,9 +19,38 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
 
-  # url-frontier:
-  #   build:
-  #     context: ..
-  #     dockerfile: ./Proiect/url_frontier/Dockerfile
-  #   ports:
-  #     - 8000:80
+  url-frontier:
+    build:
+      context: ..
+      dockerfile: ./Proiect/url_frontier/Dockerfile
+    ports:
+      - 8000:80
+    environment:
+      URL_FRONTIER_MONGODB_CONNECTION: mongodb://root:example@mongo:27017/
+
+  crawler:
+    build:
+      context: ..
+      dockerfile: ./Proiect/crawler/Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 16
+    environment:
+      CRAWLER_URL_FRONTIER_CONNECTION: http://url-frontier:8000/
+      CRAWLER_MONGODB_CONNECTION: mongodb://root:example@mongo:27017/
+    volumes:
+      - ./docker-volume/:/app/Proiect/crawler
+
+  indexer:
+    build:
+      context: ..
+      dockerfile: ./Proiect/indexerd/Dockerfile
+    volumes:
+      - ./docker-volume/:/app/Proiect/indexerd
+
+  web-search:
+    build:
+      context: ..
+      dockerfile: ./Proiect/web-search/Dockerfile
+    volumes:
+      - ./docker-volume/:/app/Proiect/web-search

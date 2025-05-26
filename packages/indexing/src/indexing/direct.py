@@ -23,7 +23,10 @@ def build_direct_index(
             word = process_word_for_indexing(word, stopwords, exceptions)
             if word is not None:
                 words[word] += 1
-        direct_index.insert(os.path.basename(file.name.decode("utf-8")), words)
+        file_name = (
+            file.name.decode("utf-8") if isinstance(file.name, bytes) else file.name
+        )
+        direct_index.insert(os.path.basename(file_name), words)
 
     return direct_index
 

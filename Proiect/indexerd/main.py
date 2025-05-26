@@ -51,7 +51,7 @@ def do_direct_indexing(
         print(f"direct indexing got exc: {e}")
 
 
-def update_indirect_index():
+def update_inverted_index():
     direct_index = BPlusTree[str, Counter[str, int]]()
 
     for index_file in os.listdir("indexes/"):
@@ -75,7 +75,7 @@ def update_indirect_index():
     for docid, index_data in inverted_index:
         serialized[docid] = {"tfs": index_data.document_tfs, "idf": index_data.idf}
 
-    with open("indexes/indirect.json", "w") as f:
+    with open("indexes/inverted.json", "w") as f:
         json.dump(serialized, f)
 
 
@@ -121,7 +121,7 @@ class WebsiteCrawledEventHandler(FileSystemEventHandler):
         )
 
         if documents_processed % 10 == 0 or True:
-            self.threadpool.submit(update_indirect_index)
+            self.threadpool.submit(update_inverted_index)
 
 
 def main():

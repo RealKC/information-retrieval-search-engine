@@ -1,0 +1,2 @@
+# this isn't ignored by the global .gitignore because it's a symlink
+sites

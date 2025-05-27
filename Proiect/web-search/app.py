@@ -1,13 +1,15 @@
 import json
 import searchfuncs
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from indexing.inverted import IndexData
 from indexing.utils import parse_word_file
 from pydantic_settings import BaseSettings
 from trie import Trie
+from watchdog.events import FileSystemEventHandler, DirModifiedEvent, FileModifiedEvent
+from watchdog.observers import Observer
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length
 
@@ -38,7 +40,20 @@ def load_inverted_index() -> Trie[IndexData]:
     return inverted_index
 
 
-inverted_index = load_inverted_index()
+try:
+    inverted_index = load_inverted_index()
+except FileNotFoundError:
+    print("inverted index not found...")
+    inverted_index = Trie[IndexData]()
+
+
+class IndexChangedHandler(FileSystemEventHandler):
+    def on_modified(event: DirModifiedEvent | FileModifiedEvent):
+        global inverted_index
+
+        inverted_index = load_inverted_index()
+
+
 exceptions = parse_word_file("data/exceptions.txt")
 stopwords = parse_word_file("data/stopwords.txt")
 
@@ -59,6 +74,7 @@ def index():
 
     if form.validate_on_submit():
         query = form.query.data
+        print(f"searching for '{query}'")
         results = searchfuncs.vector.search(
             query, inverted_index, stopwords, exceptions
         )

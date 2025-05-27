@@ -13,6 +13,7 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "searchfuncs",
     "trie",
+    "watchdog>=6.0.0",
 ]
 
 [tool.uv.sources]

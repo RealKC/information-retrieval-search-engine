@@ -1142,6 +1142,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "searchfuncs" },
     { name = "trie" },
+    { name = "watchdog" },
 ]
 
 [package.metadata]
@@ -1154,6 +1155,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "searchfuncs", editable = "packages/searchfuncs" },
     { name = "trie", editable = "packages/trie" },
+    { name = "watchdog", specifier = ">=6.0.0" },
 ]
 
 [[package]]

@@ -16,6 +16,11 @@ from models import Domain, Settings
 
 
 settings = Settings(_env_file=".env")
+if (
+    url_frontier_connection := os.getenv("CRAWLER_URL_FRONTIER_CONNECTION")
+) is not None:
+    settings.url_frontier_connection = url_frontier_connection
+print(settings.url_frontier_connection)
 
 
 class Crawler(crawlerbits.Crawler):

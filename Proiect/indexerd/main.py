@@ -133,15 +133,6 @@ def main():
         observer.schedule(handler, SITES_STORAGE, recursive=True)
         observer.start()
 
-        with open(
-            "/home/kc/University/RI/Proiect/indexerd/sites/https:/www.robotstxt.org/a"
-        ) as fin:
-            with open(
-                f"/home/kc/University/RI/Proiect/indexerd/sites/https:/www.robotstxt.org/{CONTENTS}",
-                "w",
-            ) as fout:
-                fout.write(fin.read())
-
         try:
             while True:
                 time.sleep(1)

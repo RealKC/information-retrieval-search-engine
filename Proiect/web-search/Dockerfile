@@ -18,4 +18,4 @@ RUN CC=clang CXX=clang++ uv sync --frozen --no-cache
 EXPOSE 5000
 
 # Run the application.
-CMD ["/app/.venv/bin/flask", "run", "--port", "5000" ]
+CMD ["/app/.venv/bin/flask", "run", "--host", "0.0.0.0", "--port", "5000" ]

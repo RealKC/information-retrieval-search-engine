@@ -17,4 +17,5 @@ WORKDIR /app/Proiect/url_frontier
 RUN uv sync --frozen --no-cache
 
 # Run the application.
-CMD ["/app/.venv/bin/fastapi", "run", "/app/Proiect/url_frontier/main.py", "--port", "80", "--host", "0.0.0.0"]
+EXPOSE 8080
+CMD ["/app/.venv/bin/fastapi", "run", "/app/Proiect/url_frontier/main.py", "--port", "8080", "--host", "0.0.0.0"]

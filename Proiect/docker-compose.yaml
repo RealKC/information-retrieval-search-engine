@@ -5,6 +5,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     ports:
       - 27017:27017
 
@@ -18,15 +24,21 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
       ME_CONFIG_BASICAUTH: false
+    depends_on:
+      mongo:
+        condition: service_healthy
 
   url-frontier:
     build:
       context: ..
       dockerfile: ./Proiect/url_frontier/Dockerfile
     ports:
-      - 8000:80
+      - 8000:8080
     environment:
       URL_FRONTIER_MONGODB_CONNECTION: mongodb://root:example@mongo:27017/
+    depends_on:
+      mongo:
+        condition: service_healthy
 
   crawler:
     build:
@@ -35,22 +47,35 @@ services:
     deploy:
       mode: replicated
       replicas: 16
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
     environment:
-      CRAWLER_URL_FRONTIER_CONNECTION: http://url-frontier:8000/
+      CRAWLER_URL_FRONTIER_CONNECTION: "http://url-frontier:8080"
       CRAWLER_MONGODB_CONNECTION: mongodb://root:example@mongo:27017/
     volumes:
-      - ./docker-volume/:/app/Proiect/crawler
+      - ./docker-volume/sites:/app/Proiect/crawler/sites
+    depends_on:
+      mongo:
+        condition: service_healthy
+      url-frontier:
+        condition: service_started
 
   indexer:
     build:
       context: ..
       dockerfile: ./Proiect/indexerd/Dockerfile
     volumes:
-      - ./docker-volume/:/app/Proiect/indexerd
+      - ./docker-volume/data:/app/Proiect/indexerd/data
+      - ./docker-volume/sites:/app/Proiect/indexerd/sites
+      - ./docker-volume/indexes:/app/Proiect/indexerd/indexes
 
   web-search:
     build:
       context: ..
       dockerfile: ./Proiect/web-search/Dockerfile
+    ports:
+      - 8080:5000
     volumes:
-      - ./docker-volume/:/app/Proiect/web-search
+      - ./docker-volume/indexes:/app/Proiect/web-search/indexes
+      - ./docker-volume/data:/app/Proiect/web-search/data

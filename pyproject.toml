@@ -13,13 +13,13 @@ scripts = { workspace = true }
 [tool.uv.workspace]
 members = [
     "packages/*",
-    "Lab4",
-    "Lab5",
-    "Lab6",
     "scripts",
-    "Lab7",
-    "Lab8",
-    "Lab9",
+    "Labs/Lab4",
+    "Labs/Lab5",
+    "Labs/Lab6",
+    "Labs/Lab7",
+    "Labs/Lab8",
+    "Labs/Lab9",
     "Proiect/*",
 ]
 exclude = ["Proiect/docker-volume"]

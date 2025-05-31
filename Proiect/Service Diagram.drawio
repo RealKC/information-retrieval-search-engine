@@ -16,47 +16,55 @@
         <mxCell id="OyF0owdOx1uM8PFf-tYp-6" value="replicat de N ori" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="OyF0owdOx1uM8PFf-tYp-7">
           <mxGeometry y="90" width="110" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-8" value="serviciu de indexare" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Container_Instances.svg;" vertex="1" parent="1">
-          <mxGeometry x="828" y="350" width="50" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-9" value="&lt;div&gt;front-end web&lt;/div&gt;&lt;div&gt;pentru search&lt;/div&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/CustomDomain.svg;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="350" width="50" height="42" as="geometry" />
-        </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.487;exitY=0.017;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-4" target="OyF0owdOx1uM8PFf-tYp-3">
+        <mxCell id="OyF0owdOx1uM8PFf-tYp-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.487;exitY=0.017;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.103;entryY=0.922;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-4" target="OyF0owdOx1uM8PFf-tYp-3">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="680" y="320" as="sourcePoint" />
-            <mxPoint x="730" y="270" as="targetPoint" />
+            <mxPoint x="730" y="210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.522;exitY=-0.038;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.515;entryY=0.973;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-8" target="OyF0owdOx1uM8PFf-tYp-3">
+        <mxCell id="OyF0owdOx1uM8PFf-tYp-12" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.45;exitY=0.053;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.875;entryY=0.867;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="YFiOgNMF2Z8ln8wVuLA8-4" target="OyF0owdOx1uM8PFf-tYp-3">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="860" y="330" as="sourcePoint" />
+            <mxPoint x="854.0999999999999" y="348.0999999999999" as="sourcePoint" />
             <mxPoint x="870" y="210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="OyF0owdOx1uM8PFf-tYp-3" value="&lt;div&gt;Bază de date Mongo&lt;/div&gt;&lt;div&gt;pentru robots.txt parsat&lt;/div&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Database_General.svg;" vertex="1" parent="1">
           <mxGeometry x="720" y="170" width="38" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.912;exitY=0.512;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.007;entryY=0.493;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-4" target="OyF0owdOx1uM8PFf-tYp-8">
+        <mxCell id="OyF0owdOx1uM8PFf-tYp-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.912;exitY=0.512;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-4">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="710" y="380" as="sourcePoint" />
-            <mxPoint x="760" y="330" as="targetPoint" />
+            <mxPoint x="830" y="526" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="OyF0owdOx1uM8PFf-tYp-15" value="&lt;div&gt;comunicare la nivel&lt;/div&gt;&lt;div&gt;de sistem de fisiere&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" connectable="0" vertex="1" parent="OyF0owdOx1uM8PFf-tYp-13">
           <mxGeometry x="-0.3609" y="-1" relative="1" as="geometry">
-            <mxPoint x="39" y="-1" as="offset" />
+            <mxPoint x="50" y="42" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-14" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.928;exitY=0.457;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.032;entryY=0.492;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-8" target="OyF0owdOx1uM8PFf-tYp-9">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="900" y="380" as="sourcePoint" />
-            <mxPoint x="950" y="330" as="targetPoint" />
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-1" value="serviciu de indexare" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Container_Instances.svg;" vertex="1" parent="1">
+          <mxGeometry x="827" y="510" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-2" value="&lt;div&gt;front-end web&lt;/div&gt;&lt;div&gt;pentru search&lt;/div&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/CustomDomain.svg;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="510" width="50" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-4" value="URL frontier" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Container_Instances.svg;" vertex="1" parent="1">
+          <mxGeometry x="827" y="350" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.028;entryY=0.512;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="OyF0owdOx1uM8PFf-tYp-4" target="YFiOgNMF2Z8ln8wVuLA8-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-6" value="comunicare HTTP" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" connectable="0" vertex="1" parent="YFiOgNMF2Z8ln8wVuLA8-5">
+          <mxGeometry x="-0.2864" y="-4" relative="1" as="geometry">
+            <mxPoint x="38" y="-4" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="OyF0owdOx1uM8PFf-tYp-16" value="&lt;div&gt;comunicare la nivel&lt;/div&gt;&lt;div&gt;de sistem de fisiere&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" connectable="0" vertex="1" parent="OyF0owdOx1uM8PFf-tYp-14">
-          <mxGeometry x="0.0467" relative="1" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="YFiOgNMF2Z8ln8wVuLA8-1" target="YFiOgNMF2Z8ln8wVuLA8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="YFiOgNMF2Z8ln8wVuLA8-8" value="&lt;div&gt;comunicare la nivel&lt;/div&gt;&lt;div&gt;de sistem de fisiere&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" connectable="0" vertex="1" parent="YFiOgNMF2Z8ln8wVuLA8-7">
+          <mxGeometry x="-0.1681" y="-2" relative="1" as="geometry">
+            <mxPoint x="15" y="-2" as="offset" />
           </mxGeometry>
         </mxCell>
       </root>
